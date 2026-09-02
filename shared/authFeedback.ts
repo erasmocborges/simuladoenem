@@ -1,3 +1,5 @@
+import { AUTHORIZED_TEACHER_EMAIL } from "./identityRoles";
+
 type AuthErrorShape = {
   status?: unknown;
   statusCode?: unknown;
@@ -28,6 +30,7 @@ export function authenticationErrorMessage(error: unknown) {
   if (/password.*(short|least|length|weak)|senha.*(curta|fraca)/.test(normalized)) return "A senha deve ter pelo menos 8 caracteres. Escolha uma senha nova e tente novamente.";
   if (/invalid.*email|email.*invalid/.test(normalized)) return "Confira o e-mail informado. Use o endereço institucional completo, sem espaços antes ou depois.";
   if (/not confirmed|confirmation|not verified/.test(normalized)) return "A conta ainda não está disponível para entrada. Aguarde alguns instantes e tente novamente.";
+  if (status === 403 || /developer-role-required|teacher.*role|role.*teacher|permission|permissão|not authorized|não autorizado/.test(normalized)) return `A conta entrou, mas não tem autorização para o módulo do professor. Use “${AUTHORIZED_TEACHER_EMAIL}” e peça a atribuição do papel teacher no Netlify Identity.`;
   if (status === 429) return "Foram feitas muitas tentativas em sequência. Aguarde alguns minutos antes de tentar novamente.";
   if (status === 400 || status === 401 || status === 422) return "Não foi possível entrar com estes dados. Confira o e-mail e a senha; se a conta ainda não existe, selecione “Criar conta”.";
   if (status && status >= 500) return "O serviço de acesso está temporariamente indisponível. Aguarde alguns minutos e tente novamente.";

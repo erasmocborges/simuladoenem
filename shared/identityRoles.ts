@@ -8,6 +8,11 @@ export type IdentityRoleSource = {
 export const STUDENT_ROLE = "student";
 export const TEACHER_ROLE = "teacher";
 export const AUTHORIZED_TEACHER_EMAIL = "erasmo.borges@escola.pr.gov.br";
+export const INSTITUTIONAL_EMAIL_SUFFIX = "@escola.pr.gov.br";
+
+export function isInstitutionalEmail(email: string) {
+  return /^[^\s@]+@escola\.pr\.gov\.br$/i.test(email.trim());
+}
 
 export function hasTeacherRole(user: IdentityRoleSource | null | undefined) {
   if (!user) return false;
