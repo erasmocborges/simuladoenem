@@ -3,6 +3,7 @@ import { Loader2, MailCheck, UserRound } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { authenticationErrorMessage, credentialValidationError, summarizeAuthError } from "@shared/authFeedback";
 import { passwordRecoveryError } from "@shared/authRecovery";
+import { AUTHORIZED_TEACHER_EMAIL } from "@shared/identityRoles";
 import {
   Dialog,
   DialogContent,
@@ -13,11 +14,13 @@ import {
 
 type AuthMode = "login" | "signup" | "recovery-request" | "reset-password";
 type InitialAuthMode = "login" | "signup";
+type AuthContext = "student" | "developer";
 
 type StudentAuthDialogProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   initialMode?: InitialAuthMode;
+  context?: AuthContext;
   onLogin: (email: string, password: string) => Promise<void>;
   onSignup: (email: string, password: string, name: string) => Promise<boolean>;
   onRecover: (email: string) => Promise<void>;
@@ -25,7 +28,7 @@ type StudentAuthDialogProps = {
   onCompletePasswordRecovery: (password: string) => Promise<void>;
 };
 
-export function StudentAuthDialog({ open, onOpenChange, initialMode = "login", onLogin, onSignup, onRecover, requiresPasswordReset, onCompletePasswordRecovery }: StudentAuthDialogProps) {
+export function StudentAuthDialog({ open, onOpenChange, initialMode = "login", context = "student", onLogin, onSignup, onRecover, requiresPasswordReset, onCompletePasswordRecovery }: StudentAuthDialogProps) {
   const [mode, setMode] = useState<AuthMode>("login");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -103,9 +106,14 @@ export function StudentAuthDialog({ open, onOpenChange, initialMode = "login", o
     }
   };
 
-  const title = mode === "login" ? "Entrar para sincronizar" : mode === "signup" ? "Criar conta de estudante" : mode === "recovery-request" ? "Recuperar acesso" : "Definir nova senha";
+  const isDeveloperAccess = context === "developer";
+  const title = mode === "login"
+    ? isDeveloperAccess ? "Acesso do professor desenvolvedor" : "Entrar para sincronizar"
+    : mode === "signup" ? "Criar conta de estudante" : mode === "recovery-request" ? "Recuperar acesso" : "Definir nova senha";
   const description = mode === "login"
-    ? "Use a conta criada nesta página — ela é independente do acesso administrativo ao Netlify."
+    ? isDeveloperAccess
+      ? `Use a conta docente autorizada. O acesso exige ${AUTHORIZED_TEACHER_EMAIL} e o papel teacher atribuído no Netlify Identity.`
+      : "Use a conta criada nesta página — ela é independente do acesso administrativo ao Netlify."
     : mode === "signup"
       ? "Uma conta permite salvar respostas e histórico de tentativas com segurança."
       : mode === "recovery-request"
@@ -131,7 +139,7 @@ export function StudentAuthDialog({ open, onOpenChange, initialMode = "login", o
         </form>
         {mode !== "reset-password" && <div className="flex flex-wrap gap-x-4 gap-y-2 border-t border-[#DED6CA] pt-4 text-xs font-bold text-[#435064]">
           {mode !== "login" && <button type="button" onClick={() => changeMode("login")} className="underline decoration-[#C84D3A] underline-offset-4">Já tenho conta</button>}
-          {mode !== "signup" && <button type="button" onClick={() => changeMode("signup")} className="underline decoration-[#C84D3A] underline-offset-4">Criar conta</button>}
+          {mode !== "signup" && !isDeveloperAccess && <button type="button" onClick={() => changeMode("signup")} className="underline decoration-[#C84D3A] underline-offset-4">Criar conta</button>}
           {mode !== "recovery-request" && <button type="button" onClick={() => changeMode("recovery-request")} className="underline decoration-[#C84D3A] underline-offset-4">Esqueci a senha</button>}
         </div>}
       </DialogContent>
