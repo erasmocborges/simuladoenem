@@ -449,9 +449,7 @@ const overallPercentage = submittedScore?.percentage ?? 0;
   const isCriticalTime = remainingSeconds > 0 && remainingSeconds <= 10 * 60;
   const isTimeOver = remainingSeconds === 0;
   const classAttempts = attempts.filter((attempt) => attempt.classroomKey === classroomKey);
-  const uniqueStudentsInClass = new Set(classAttempts.map((attempt) => attempt.studentKey)).size;
-  const classAverage = classAttempts.length ? Math.round(classAttempts.reduce((sum, attempt) => sum + attempt.percentage, 0) / classAttempts.length) : 0;
-  const anonymousRanking = useMemo(() => {
+   const anonymousRanking = useMemo(() => {
     const recordsByStudent = new Map<string, Attempt[]>();
     classAttempts.forEach((attempt) => recordsByStudent.set(attempt.studentKey, [...(recordsByStudent.get(attempt.studentKey) || []), attempt]));
     return Array.from(recordsByStudent.values())
@@ -482,6 +480,16 @@ const teacherClassrooms = useMemo(
     ),
   [teacherAttempts],
 );
+  const uniqueStudentsInClass = new Set(
+  teacherRows.map((attempt) => attempt.studentKey),
+).size;
+
+const classAverage = teacherRows.length
+  ? Math.round(
+      teacherRows.reduce((sum, attempt) => sum + attempt.percentage, 0) /
+        teacherRows.length,
+    )
+  : 0;
   const latestAttempt = studentAttempts[studentAttempts.length - 1];
   const wrongQuestions = useMemo(() => latestAttempt?.answers ? attemptQuestions.filter((q) => latestAttempt.answers[q.numero] && latestAttempt.answers[q.numero] !== q.correta) : [], [attemptQuestions, latestAttempt]);
   const performanceMessage = totalAnswered === 0
