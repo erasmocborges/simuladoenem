@@ -459,8 +459,29 @@ const overallPercentage = submittedScore?.percentage ?? 0;
       .sort((a, b) => b.best - a.best)
       .map((record, index) => ({ ...record, label: `Participante ${String.fromCharCode(65 + index)}` }));
   }, [classAttempts]);
-  const teacherRows = useMemo(() => attempts.filter((attempt) => teacherFilter === "todas" || attempt.classroomKey === teacherFilter).sort((a, b) => teacherSort === "score" ? b.percentage - a.percentage : +new Date(b.createdAt) - +new Date(a.createdAt)), [attempts, teacherFilter, teacherSort]);
-  const teacherClassrooms = useMemo(() => Array.from(new Map(attempts.map((attempt) => [attempt.classroomKey, attempt.classroom])).entries()), [attempts]);
+const teacherRows = useMemo(
+  () =>
+    teacherAttempts
+      .filter(
+        (attempt) =>
+          teacherFilter === "todas" || attempt.classroom === teacherFilter,
+      )
+      .sort((a, b) =>
+        teacherSort === "score"
+          ? b.percentage - a.percentage
+          : +new Date(b.createdAt) - +new Date(a.createdAt),
+      ),
+  [teacherAttempts, teacherFilter, teacherSort],
+);
+const teacherClassrooms = useMemo(
+  () =>
+    Array.from(
+      new Map(
+        teacherAttempts.map((attempt) => [attempt.classroom, attempt.classroom]),
+      ).entries(),
+    ),
+  [teacherAttempts],
+);
   const latestAttempt = studentAttempts[studentAttempts.length - 1];
   const wrongQuestions = useMemo(() => latestAttempt?.answers ? attemptQuestions.filter((q) => latestAttempt.answers[q.numero] && latestAttempt.answers[q.numero] !== q.correta) : [], [attemptQuestions, latestAttempt]);
   const performanceMessage = totalAnswered === 0
