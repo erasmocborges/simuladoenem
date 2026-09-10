@@ -50,7 +50,11 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { StudentAuthDialog } from "@/components/StudentAuthDialog";
 import { questions, areaSummary, type Question } from "@/data/simulado";
 import { useAuth } from "@/_core/hooks/useAuth";
-import { loadRemoteProgress, saveRemoteProgress } from "@/lib/progressApi";
+import import {
+  loadRemoteProgress,
+  saveRemoteProgress,
+  loadTeacherProgress,
+} from "@/lib/progressApi";
 import { hasInstitutionalTeacherAccess, isInstitutionalEmail } from "@shared/identityRoles";
 import { cadernoPdfFilename, paginateCadernoForPrint, selectCadernoPrintBlocks, type CadernoPrintBlock } from "@shared/cadernoPrint";
 import { calculateSimulationScore } from "@shared/simulationScoring";
