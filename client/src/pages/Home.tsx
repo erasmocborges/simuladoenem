@@ -302,6 +302,28 @@ const [teacherAttempts, setTeacherAttempts] = useState<TeacherProgressAttempt[]>
   const [cadernoOutputMode, setCadernoOutputMode] = useState<CadernoOutputMode>("print");
   const [selectedCadernoBlocks, setSelectedCadernoBlocks] = useState<string[]>(() => CADERNO_PRINT_BLOCKS.map((block) => block.id));
   const teacherMode = hasInstitutionalTeacherAccess(user);
+    useEffect(() => {
+    if (!isAuthenticated || !teacherMode) {
+      setTeacherAttempts([]);
+      return;
+    }
+
+    let active = true;
+
+    void loadTeacherProgress()
+      .then((result) => {
+        if (!active) return;
+        setTeacherAttempts(result.attempts);
+      })
+      .catch(() => {
+        if (!active) return;
+        setTeacherAttempts([]);
+      });
+
+    return () => {
+      active = false;
+    };
+  }, [isAuthenticated, teacherMode, user?.id]);
   const accessUnlocked = teacherMode || studentIdentified;
   const studentKey = user?.id || normalizeIdentity(studentEmail, localProfileId);
   const classroomKey = normalizeIdentity(classroom, "turma-local");
