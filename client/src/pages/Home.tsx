@@ -281,6 +281,7 @@ export default function Home() {
   const [classroom, setClassroom] = useState(profile.classroom);
   const [localProfileId] = useState(profile.localId);
   const [submitted, setSubmitted] = useState(false);
+  const [submittedScore, setSubmittedScore] = useState<ReturnType<typeof calculateSimulationScore> | null>(null);
   const [timerPreset, setTimerPreset] = useState<TimerPreset>("dia1");
   const [remainingSeconds, setRemainingSeconds] = useState(timerPresets.dia1.seconds);
   const [timerRunning, setTimerRunning] = useState(false);
@@ -406,15 +407,17 @@ export default function Home() {
     } catch { /* ignorar dados remotos inválidos */ }
   }, [remotePayload]);
 
-  const simulationScore = useMemo(() => calculateSimulationScore(attemptQuestions, answers), [attemptQuestions, answers]);
+  const liveSimulationScore = useMemo(() => calculateSimulationScore(attemptQuestions, answers), [attemptQuestions, answers]);
+const emptySimulationScore = useMemo(() => calculateSimulationScore(attemptQuestions, {}), [attemptQuestions]);
+const simulationScore = submittedScore ?? emptySimulationScore;
   const attemptPrintQuestions = useMemo(() => attemptQuestions.map((question, index) => ({ ...question, numero: index + 1 })), [attemptQuestions]);
   const selectedCadernoQuestions = useMemo(() => selectCadernoPrintBlocks(attemptPrintQuestions, CADERNO_PRINT_BLOCKS, selectedCadernoBlocks), [attemptPrintQuestions, selectedCadernoBlocks]);
   const selectedCadernoPages = useMemo(() => paginateCadernoForPrint(selectedCadernoQuestions), [selectedCadernoQuestions]);
   const selectedCadernoLabel = useMemo(() => CADERNO_PRINT_BLOCKS.filter((block) => selectedCadernoBlocks.includes(block.id)).map((block) => block.label.replace("Bloco ", "B.")).join(" · "), [selectedCadernoBlocks]);
-  const areaPerformance = simulationScore.byArea;
-  const totalAnswered = simulationScore.answered;
-  const totalCorrect = simulationScore.correct;
-  const overallPercentage = simulationScore.percentage;
+const areaPerformance = simulationScore.byArea;
+const totalAnswered = liveSimulationScore.answered;
+const totalCorrect = submittedScore?.correct ?? 0;
+const overallPercentage = submittedScore?.percentage ?? 0;
   const isCriticalTime = remainingSeconds > 0 && remainingSeconds <= 10 * 60;
   const isTimeOver = remainingSeconds === 0;
   const classAttempts = attempts.filter((attempt) => attempt.classroomKey === classroomKey);
@@ -467,43 +470,65 @@ export default function Home() {
       setProgressNotice("Progresso salvo neste navegador; a sincronização será tentada no próximo salvamento.");
     }
   };
-  const finishSimulation = () => {
-    if (submitted || maxAttemptsReached || totalAnswered === 0) return;
-    const now = new Date().toISOString();
-    const record: Attempt = {
-      id: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
-      studentKey,
-      studentName: studentName.trim() || "Estudante local",
-      classroomKey,
-      classroom: classroom.trim() || "Turma local",
-      createdAt: now,
-      correct: totalCorrect,
-      answered: totalAnswered,
-      percentage: overallPercentage,
+   const finishSimulation = () => {
+  if (submitted || maxAttemptsReached || totalAnswered === 0) return;
+
+  const finalScore = calculateSimulationScore(attemptQuestions, answers);
+  const now = new Date().toISOString();
+
+  const record: Attempt = {
+    id: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+    studentKey,
+    studentName: studentName.trim() || "Estudante local",
+    classroomKey,
+    classroom: classroom.trim() || "Turma local",
+    createdAt: now,
+    correct: finalScore.correct,
+    answered: finalScore.answered,
+    percentage: finalScore.percentage,
+    remainingSeconds,
+    byArea: finalScore.byArea.map((area) => ({
+      short: area.short,
+      correct: area.correct,
+      answered: area.answered,
+      blank: area.blank,
+      percentage: area.percentage,
+    })),
+    answers: { ...answers },
+  };
+
+  const updated = [...attempts, record];
+
+  setSubmittedScore(finalScore);
+  setAttempts(updated);
+
+  if (isAuthenticated) {
+    void syncProgress({
+      answers,
       remainingSeconds,
-      byArea: areaPerformance.map((area) => ({ short: area.short, correct: area.correct, answered: area.answered, blank: area.blank, percentage: area.percentage })),
-      answers: { ...answers },
-    };
-    const updated = [...attempts, record];
-    setAttempts(updated);
-    if (isAuthenticated) void syncProgress({ answers, remainingSeconds, studentEmail, studentName, classroom, attempts: updated, savedAt: new Date().toISOString() });
-    window.localStorage.removeItem(PROGRESS_STORAGE_KEY);
-    setSubmitted(true);
-    setTimerRunning(false);
-    scrollToSection("resultado");
-  };
-  const beginNextAttempt = () => {
-    if (maxAttemptsReached) return;
-    setAnswers({});
-    setRevealed(new Set());
-    setSubmitted(false);
-    setTimerRunning(false);
-    setRemainingSeconds(timerPresets[timerPreset].seconds);
-    setActiveArea("Todas");
-    setQuery("");
+      studentEmail,
+      studentName,
+      classroom,
+      attempts: updated,
+      savedAt: new Date().toISOString(),
+    });
+  }
+
+  window.localStorage.removeItem(PROGRESS_STORAGE_KEY);
+  setSubmitted(true);
+  setTimerRunning(false);
+  scrollToSection("resultado");
+};
+ const beginNextAttempt = () => {
+  if (maxAttemptsReached) return;
+  setAnswers({});
+  setSubmittedScore(null);
+  setRevealed(new Set());
+  setSubmitted(false);
     setPage(1);
-    scrollToSection("questoes");
-  };
+  setActiveArea("Todas");
+  setRemainingSeconds(timerPresets[timerPreset].seconds);
+  setTimerRunning(true);
   const saveProgress = () => {
     const payload = { answers, remainingSeconds, studentEmail, studentName, classroom, attempts, savedAt: new Date().toISOString() };
     window.localStorage.setItem(PROGRESS_STORAGE_KEY, JSON.stringify(payload));
