@@ -290,6 +290,7 @@ export default function Home() {
   const [remainingSeconds, setRemainingSeconds] = useState(timerPresets.dia1.seconds);
   const [timerRunning, setTimerRunning] = useState(false);
   const [attempts, setAttempts] = useState<Attempt[]>(initialAttempts);
+  const [teacherAttempts, setTeacherAttempts] = useState<Attempt[]>([]);
   const [reviewOpen, setReviewOpen] = useState(false);
   const [progressNotice, setProgressNotice] = useState("");
   const [teacherFilter, setTeacherFilter] = useState("todas");
