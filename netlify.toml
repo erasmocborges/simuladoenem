@@ -17,6 +17,12 @@
   force = true
 
 [[redirects]]
+  from = "/api/teacher-progress"
+  to = "/.netlify/functions/teacher-progress"
+  status = 200
+  force = true
+
+[[redirects]]
   from = "/*"
   to = "/index.html"
   status = 200
