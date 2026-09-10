@@ -521,20 +521,18 @@ const overallPercentage = submittedScore?.percentage ?? 0;
 };
  const beginNextAttempt = () => {
   if (maxAttemptsReached) return;
+
   setAnswers({});
   setSubmittedScore(null);
   setRevealed(new Set());
   setSubmitted(false);
-    setPage(1);
+  setPage(1);
   setActiveArea("Todas");
+  setQuery("");
   setRemainingSeconds(timerPresets[timerPreset].seconds);
   setTimerRunning(true);
-  const saveProgress = () => {
-    const payload = { answers, remainingSeconds, studentEmail, studentName, classroom, attempts, savedAt: new Date().toISOString() };
-    window.localStorage.setItem(PROGRESS_STORAGE_KEY, JSON.stringify(payload));
-    if (isAuthenticated) void syncProgress(payload);
-    else setProgressNotice("Progresso salvo neste navegador. Entre na sua conta para sincronizá-lo entre dispositivos.");
-  };
+  scrollToSection("questoes");
+};
   const exportAllAttemptsCsv = () => {
     const header = ["Estudante", "Turma", "Data", "Acertos", "Respondidas", "Percentual", "Tempo restante", "Linguagens", "Humanas", "Natureza", "Matemática"];
     const rows = attempts.map((attempt) => {
