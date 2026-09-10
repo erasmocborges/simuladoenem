@@ -50,10 +50,11 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { StudentAuthDialog } from "@/components/StudentAuthDialog";
 import { questions, areaSummary, type Question } from "@/data/simulado";
 import { useAuth } from "@/_core/hooks/useAuth";
-import import {
+import {
   loadRemoteProgress,
   saveRemoteProgress,
   loadTeacherProgress,
+  type TeacherProgressAttempt,
 } from "@/lib/progressApi";
 import { hasInstitutionalTeacherAccess, isInstitutionalEmail } from "@shared/identityRoles";
 import { cadernoPdfFilename, paginateCadernoForPrint, selectCadernoPrintBlocks, type CadernoPrintBlock } from "@shared/cadernoPrint";
@@ -290,7 +291,7 @@ export default function Home() {
   const [remainingSeconds, setRemainingSeconds] = useState(timerPresets.dia1.seconds);
   const [timerRunning, setTimerRunning] = useState(false);
   const [attempts, setAttempts] = useState<Attempt[]>(initialAttempts);
-  const [teacherAttempts, setTeacherAttempts] = useState<Attempt[]>([]);
+const [teacherAttempts, setTeacherAttempts] = useState<TeacherProgressAttempt[]>([]);
   const [reviewOpen, setReviewOpen] = useState(false);
   const [progressNotice, setProgressNotice] = useState("");
   const [teacherFilter, setTeacherFilter] = useState("todas");
