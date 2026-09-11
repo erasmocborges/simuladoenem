@@ -24,12 +24,11 @@ type StudentAuthDialogProps = {
   onLogin: (email: string, password: string) => Promise<void>;
   onSignup: (email: string, password: string, name: string) => Promise<boolean>;
   onRecover: (email: string) => Promise<void>;
+  onGoogleLogin: () => Promise<void>;
   requiresPasswordReset: boolean;
   onCompletePasswordRecovery: (password: string) => Promise<void>;
 };
-
-export function StudentAuthDialog({ open, onOpenChange, initialMode = "login", context = "student", onLogin, onSignup, onRecover, requiresPasswordReset, onCompletePasswordRecovery }: StudentAuthDialogProps) {
-  const [mode, setMode] = useState<AuthMode>("login");
+export function StudentAuthDialog({ open, onOpenChange, initialMode = "login", context = "student", onLogin, onSignup, onRecover, onGoogleLogin, requiresPasswordReset, onCompletePasswordRecovery }: StudentAuthDialogProps) {  const [mode, setMode] = useState<AuthMode>("login");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmation, setConfirmation] = useState("");
@@ -135,6 +134,33 @@ export function StudentAuthDialog({ open, onOpenChange, initialMode = "login", c
           {mode === "reset-password" && <label className="grid gap-1.5 text-xs font-bold tracking-[0.08em] text-[#435064] uppercase">Confirmar nova senha<input type="password" value={confirmation} onChange={(event) => setConfirmation(event.target.value)} required minLength={8} autoComplete="new-password" className="border border-[#D9D0C1] bg-white px-3 py-2.5 text-sm font-normal tracking-normal text-[#1D2A44] outline-none focus:border-[#C84D3A]" placeholder="Repita a nova senha" /></label>}
           {error && <p role="alert" className="border-l-2 border-[#C84D3A] pl-3 text-sm text-[#A23C2D]">{error}</p>}
           {notice && <p role="status" className="flex gap-2 border-l-2 border-[#497464] pl-3 text-sm text-[#2C5B4A]"><MailCheck size={17} className="mt-0.5 shrink-0" />{notice}</p>}
+        {(mode === "login" || mode === "signup") && (
+  <Button
+    type="button"
+    variant="outline"
+    disabled={pending}
+    onClick={async () => {
+      setPending(true);
+      setError("");
+      try {
+        await onGoogleLogin();
+      } catch (reason) {
+        const summary = summarizeAuthError(reason);
+        console.error("Falha na autenticação Google", {
+          status: summary.status,
+          code: summary.code,
+          message: summary.message,
+        });
+        setError(authenticationErrorMessage(reason));
+      } finally {
+        setPending(false);
+      }
+    }}
+    className="border-[#1D2A44] bg-white text-[#1D2A44] hover:bg-[#F1EEE7]"
+  >
+    Continuar com Google
+  </Button>
+)}
           <Button type="submit" disabled={pending} className="bg-[#1D2A44] text-white hover:bg-[#283a5a]">{pending ? <><Loader2 size={16} className="animate-spin" /> Processando</> : mode === "login" ? "Entrar e sincronizar" : mode === "signup" ? "Criar conta" : mode === "recovery-request" ? "Enviar instruções" : "Salvar nova senha"}</Button>
         </form>
         {mode !== "reset-password" && <div className="flex flex-wrap gap-x-4 gap-y-2 border-t border-[#DED6CA] pt-4 text-xs font-bold text-[#435064]">
