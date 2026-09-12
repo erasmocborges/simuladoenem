@@ -767,7 +767,7 @@ const classAverage = teacherRows.length
     <div className="min-h-screen bg-[#F7F3EC] text-[#1D2A44]">
       <header className="topbar">
         <a href="#inicio" className="brand" aria-label="Ir para o início">
-          <img src="/manus-storage/enem-logo-symbol_049e20d0.png" alt="Símbolo do Simulado ENEM" className="brand-mark" />
+          <<img src="/enem-hero-home.jpg.png" alt="Símbolo do Simulado ENEM" className="brand-mark" />
           <span className="brand-word"><strong>SIMULADO</strong><em>ENEM</em></span>
         </a>
         <nav className={`main-nav ${menuOpen ? "open" : ""}`} aria-label="Navegação principal">
@@ -930,7 +930,7 @@ const classAverage = teacherRows.length
 
         {teacherMode && <section className="correction-section" id="correcao">
           <div className="correction-copy"><span className="eyebrow light"><span></span> Correção organizada</span><h2>Do cartão-resposta<br />à <i>próxima aula.</i></h2><p>Escolha o bloco de aplicação, revise a pré-visualização e gere a versão A4 adequada para a turma.</p><div className="correction-buttons"><Button onClick={() => requestCadernoOutput("print")}><Printer size={16} /> Imprimir caderno</Button><Button variant="outline" className="light-outline" onClick={() => requestCadernoOutput("pdf")}><FileDown size={16} /> Exportar caderno PDF</Button><Button variant="outline" className="light-outline" onClick={() => downloadFile("mascara", attemptPrintQuestions)}><ArrowDownToLine size={16} /> Baixar máscara</Button><Button variant="outline" className="light-outline" onClick={() => downloadFile("gabarito", attemptPrintQuestions)}><BookOpenCheck size={16} /> Baixar gabarito</Button></div></div>
-          <div className="correction-card"><img src="/manus-storage/enem-correction-detail_08ac5859.jpg" alt="Detalhe de uma folha de respostas sendo corrigida" /><div className="correction-card-body"><div><ClipboardCheck size={21} /><span>CHAVE DOCENTE</span></div><h3>100 respostas<br />em uma única matriz.</h3><button onClick={() => setShowKey((value) => !value)}>{showKey ? "Ocultar chave" : "Consultar chave"} <ArrowRight size={16} /></button></div></div>
+          <div className="correction-card"><<img src="/enem-hero-home.jpg.png"<img src="/enem-hero-home.jpg.png" alt="Detalhe de uma folha de respostas sendo corrigida" /><div className="correction-card-body"><div><ClipboardCheck size={21} /><span>CHAVE DOCENTE</span></div><h3>100 respostas<br />em uma única matriz.</h3><button onClick={() => setShowKey((value) => !value)}>{showKey ? "Ocultar chave" : "Consultar chave"} <ArrowRight size={16} /></button></div></div>
           {showKey && <div className="answer-key" aria-live="polite"><div className="answer-key-title"><div><span className="mini-label">GABARITO RÁPIDO</span><h3>Chave de correção</h3></div><button onClick={() => setShowKey(false)} aria-label="Fechar chave"><X size={17} /></button></div><div className="answer-key-grid">{attemptPrintQuestions.map((q) => <div key={q.numero}><span>{String(q.numero).padStart(3, "0")}</span><strong>{q.correta}</strong></div>)}</div></div>}
           <div className="answer-key"><div className="answer-key-title"><div><span className="mini-label">PAINEL DOCENTE</span><h3>Resultados locais</h3></div><div><select value={teacherFilter} onChange={(event) => setTeacherFilter(event.target.value)}><option value="todas">Todas as turmas</option>{teacherClassrooms.map(([key, name]) => <option key={key} value={key}>{name}</option>)}</select><select value={teacherSort} onChange={(event) => setTeacherSort(event.target.value)}><option value="score">Maior pontuação</option><option value="date">Mais recente</option></select></div></div><div className="answer-key-grid">{teacherRows.map((attempt) => <div key={attempt.id}><span>{attempt.studentName} · {attempt.classroom}</span><strong>{attempt.percentage}%</strong></div>)}</div></div>
         </section>}
@@ -947,7 +947,7 @@ const classAverage = teacherRows.length
         </section>
       </main>
 
-      <footer className="footer"><div className="footer-brand"><img src="<img src="/enem-hero-home.jpg.png" alt="Símbolo do Simulado ENEM" className="brand-mark" />" alt="" /><span><strong>SIMULADO</strong><em>ENEM</em></span></div><p>Preparado para revisão, aplicação e correção em contexto escolar.</p>{!teacherMode && <button className="teacher-developer-access" onClick={() => openAuth("login", "developer")}><LockKeyhole size={13} /> Acesso ao professor desenvolvedor</button>}<a href="#inicio">Voltar ao topo ↑</a></footer>
+      <footer className="footer"><div className="footer-brand"><img src="/enem-hero-home.jpg.png" alt="Símbolo do Simulado ENEM" className="brand-mark" />" alt="" /><span><strong>SIMULADO</strong><em>ENEM</em></span></div><p>Preparado para revisão, aplicação e correção em contexto escolar.</p>{!teacherMode && <button className="teacher-developer-access" onClick={() => openAuth("login", "developer")}><LockKeyhole size={13} /> Acesso ao professor desenvolvedor</button>}<a href="#inicio">Voltar ao topo ↑</a></footer>
     </div>
   );
 }
