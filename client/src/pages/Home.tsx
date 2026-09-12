@@ -870,8 +870,7 @@ const classAverage = teacherRows.length
         </section>
 
         <section className="method-section">
-          <div className="method-image"><img src="/manus-storage/enem-skills-collage_6f192fac.jpg" alt="Colagem abstrata que representa quatro campos do conhecimento" /></div>
-          <div className="method-copy">
+<div className="method-image"><img src="/enem-hero-home.jpg.png" alt="Colagem abstrata que representa quatro campos do conhecimento" /></div>          <div className="method-copy">
             <span className="eyebrow"><span></span> Como foi elaborado</span>
             <h2>Uma compilação para <i>ensinar</i>, não para copiar.</h2>
             <p>Os itens foram escritos do zero, a partir da Matriz de Referência e da observação de contextos, habilidades e formatos recorrentes nos cadernos oficiais. A opção por quatro alternativas é uma adaptação solicitada para este simulado.</p>
@@ -948,7 +947,7 @@ const classAverage = teacherRows.length
         </section>
       </main>
 
-      <footer className="footer"><div className="footer-brand"><img src="/manus-storage/enem-logo-symbol_049e20d0.png" alt="" /><span><strong>SIMULADO</strong><em>ENEM</em></span></div><p>Preparado para revisão, aplicação e correção em contexto escolar.</p>{!teacherMode && <button className="teacher-developer-access" onClick={() => openAuth("login", "developer")}><LockKeyhole size={13} /> Acesso ao professor desenvolvedor</button>}<a href="#inicio">Voltar ao topo ↑</a></footer>
+      <footer className="footer"><div className="footer-brand"><img src="<img src="/enem-hero-home.jpg.png" alt="Símbolo do Simulado ENEM" className="brand-mark" />" alt="" /><span><strong>SIMULADO</strong><em>ENEM</em></span></div><p>Preparado para revisão, aplicação e correção em contexto escolar.</p>{!teacherMode && <button className="teacher-developer-access" onClick={() => openAuth("login", "developer")}><LockKeyhole size={13} /> Acesso ao professor desenvolvedor</button>}<a href="#inicio">Voltar ao topo ↑</a></footer>
     </div>
   );
 }
