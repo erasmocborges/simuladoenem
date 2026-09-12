@@ -767,7 +767,7 @@ const classAverage = teacherRows.length
     <div className="min-h-screen bg-[#F7F3EC] text-[#1D2A44]">
       <header className="topbar">
         <a href="#inicio" className="brand" aria-label="Ir para o início">
-          <<img src="/enem-hero-home.jpg.png" alt="Símbolo do Simulado ENEM" className="brand-mark" />
+          <img src="/enem-hero-home.jpg.png" alt="Símbolo do Simulado ENEM" className="brand-mark" />     
           <span className="brand-word"><strong>SIMULADO</strong><em>ENEM</em></span>
         </a>
         <nav className={`main-nav ${menuOpen ? "open" : ""}`} aria-label="Navegação principal">
