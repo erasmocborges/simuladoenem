@@ -961,7 +961,7 @@ const classAverage = teacherRows.length
       </main>
 
       <footer className="footer"><div className="footer-brand">
-        <<img
+        <img
   src="/simulado-enem-logo.svg"
   alt="Símbolo do Simulado ENEM"
   className="brand-mark"
