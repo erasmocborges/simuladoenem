@@ -808,7 +808,7 @@ const classAverage = teacherRows.length
             <div className="hero-note"><Info size={15} /> Itens autorais inspirados em habilidades e temas de provas oficiais; não são reproduções literais.</div>
           </div>
           <div className="hero-image-wrap" aria-hidden="true">
-            <img src="/manus-storage/enem-hero-editorial_3a0438a3.jpg" alt="" className="hero-image" />
+<img src="/enem-hero-home.jpg.png" alt="" className="hero-image" /> 
             <div className="hero-stamp"><strong>4</strong><span>alternativas<br />por item</span></div>
           </div>
         </section>
