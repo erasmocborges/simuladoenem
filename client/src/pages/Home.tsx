@@ -945,7 +945,7 @@ const classAverage = teacherRows.length
         </section>
       </main>
 
-      <footer className="footer"><div className="footer-brand"><img src="/enem-hero-home.jpg.png" alt="Símbolo do Simulado ENEM" className="brand-mark" />" alt="" /><span><strong>SIMULADO</strong><em>ENEM</em></span></div><p>Preparado para revisão, aplicação e correção em contexto escolar.</p>{!teacherMode && <button className="teacher-developer-access" onClick={() => openAuth("login", "developer")}><LockKeyhole size={13} /> Acesso ao professor desenvolvedor</button>}<a href="#inicio">Voltar ao topo ↑</a></footer>
+      <footer className="footer"><div className="footer-brand"><img src="/enem-hero-home.jpg.png" alt="Símbolo do Simulado ENEM" className="brand-mark" /><span><strong>SIMULADO</strong><em>ENEM</em></span></div><p>Preparado para revisão, aplicação e correção em contexto escolar.</p>{!teacherMode && <button className="teacher-developer-access" onClick={() => openAuth("login", "developer")}><LockKeyhole size={13} /> Acesso ao professor desenvolvedor</button>}<a href="#inicio">Voltar ao topo ↑</a></footer>
     </div>
   );
 }
