@@ -76,7 +76,7 @@
   .hero-note svg { flex: 0 0 auto; color: #C84D3A; margin-top: 1px; }
   .hero-image-wrap { position: relative; min-height: 590px; background: #e9e2d6; }
   .hero-image-wrap::after { position: absolute; inset: 0; content: ""; background: linear-gradient(90deg, rgba(247,243,236,.72) 0%, rgba(247,243,236,.1) 30%, rgba(247,243,236,0) 60%); }
-  .hero-image { width: 100%; height: 100%; object-fit: cover; object-position: center; }
+  .hero-image { width: 100%; height: 100%; object-fit: contain; object-position: center; }
   .hero-stamp { position: absolute; z-index: 2; right: 10%; bottom: 9%; width: 116px; height: 116px; display: flex; align-items: center; justify-content: center; gap: 8px; background: #C84D3A; color: #fffaf2; border-radius: 50%; transform: rotate(-9deg); box-shadow: 0 14px 28px rgba(65,26,21,.24); }
   .hero-stamp strong { font-family: "DM Serif Display", serif; font-size: 54px; line-height: 1; }
   .hero-stamp span { font-size: 9px; line-height: 1.25; text-transform: uppercase; font-weight: 800; letter-spacing: .06em; }
