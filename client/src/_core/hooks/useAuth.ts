@@ -1,5 +1,6 @@
-import { getUser, handleAuthCallback, login, logout as identityLogout, onAuthChange, requestPasswordRecovery, signup, updateUser, type User } from "@netlify/identity";
 import { useCallback, useEffect, useState } from "react";
+import type { User } from "@supabase/supabase-js";
+import { supabase } from "@/lib/supabase";
 
 export function useAuth() {
   const [user, setUser] = useState<User | null>(null);
@@ -8,62 +9,169 @@ export function useAuth() {
   const [requiresPasswordReset, setRequiresPasswordReset] = useState(false);
 
   const refresh = useCallback(async () => {
-    const current = await getUser();
+    const {
+      data: { user: current },
+    } = await supabase.auth.getUser();
+
     setUser(current);
     return current;
   }, []);
 
   useEffect(() => {
     let active = true;
-    const loadIdentity = async () => {
+
+    const loadSession = async () => {
       try {
-        const callback = await handleAuthCallback();
-        if (callback?.type === "recovery") setRequiresPasswordReset(true);
-        const current = await getUser();
-        if (active) setUser(current);
+        const {
+          data: { session },
+        } = await supabase.auth.getSession();
+
+        if (active) {
+          setUser(session?.user ?? null);
+        }
       } catch (reason) {
-        if (active) setError(reason);
+        if (active) {
+          setError(reason);
+        }
       } finally {
-        if (active) setLoading(false);
+        if (active) {
+          setLoading(false);
+        }
       }
     };
-    const unsubscribe = onAuthChange((_event, current) => { if (active) setUser(current); });
-    void loadIdentity();
-    return () => { active = false; unsubscribe(); };
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((event, session) => {
+      if (!active) return;
+
+      setUser(session?.user ?? null);
+
+      if (event === "PASSWORD_RECOVERY") {
+        setRequiresPasswordReset(true);
+      }
+    });
+
+    void loadSession();
+
+    return () => {
+      active = false;
+      subscription.unsubscribe();
+    };
   }, []);
 
   const signIn = useCallback(async (email: string, password: string) => {
     setError(null);
-    const current = await login(email, password);
-    setUser(current);
+
+    const { data, error: signInError } =
+      await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+
+    if (signInError) {
+      throw signInError;
+    }
+
+    setUser(data.user);
   }, []);
 
-  const signUp = useCallback(async (email: string, password: string, name: string) => {
-    setError(null);
-    await signup(email, password, name ? { full_name: name } : undefined);
-    const current = await refresh();
-    return Boolean(current);
-  }, [refresh]);
+  const signUp = useCallback(
+    async (email: string, password: string, name: string) => {
+      setError(null);
 
-  const recover = useCallback(async (email: string) => {
-    setError(null);
-    await requestPasswordRecovery(email);
-  }, []);
+      const { data, error: signUpError } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          data: {
+            full_name: name || undefined,
+          },
+        },
+      });
 
-  const completePasswordRecovery = useCallback(async (password: string) => {
-    setError(null);
-    await updateUser({ password });
-    setRequiresPasswordReset(false);
-    await refresh();
-  }, [refresh]);
+      if (signUpError) {
+        throw signUpError;
+      }
 
-  const logout = useCallback(async () => {
-    try {
-      await identityLogout();
-    } finally {
-      setUser(null);
+      setUser(data.user);
+
+      return Boolean(data.session);
+    },
+    [],
+  );
+
+  const signInWithGoogle = useCallback(async () => {
+    setError(null);
+
+    const { error: googleError } = await supabase.auth.signInWithOAuth({
+      provider: "google",
+      options: {
+        redirectTo: window.location.origin,
+      },
+    });
+
+    if (googleError) {
+      throw googleError;
     }
   }, []);
 
-  return { user, loading, error, isAuthenticated: Boolean(user), requiresPasswordReset, refresh, login: signIn, signup: signUp, recover, completePasswordRecovery, logout };
+  const recover = useCallback(async (email: string) => {
+    setError(null);
+
+    const { error: recoveryError } =
+      await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: `${window.location.origin}/`,
+      });
+
+    if (recoveryError) {
+      throw recoveryError;
+    }
+  }, []);
+
+  const completePasswordRecovery = useCallback(
+    async (password: string) => {
+      setError(null);
+
+      const { data, error: updateError } =
+        await supabase.auth.updateUser({
+          password,
+        });
+
+      if (updateError) {
+        throw updateError;
+      }
+
+      setUser(data.user);
+      setRequiresPasswordReset(false);
+    },
+    [],
+  );
+
+  const logout = useCallback(async () => {
+    setError(null);
+
+    const { error: logoutError } = await supabase.auth.signOut();
+
+    if (logoutError) {
+      throw logoutError;
+    }
+
+    setUser(null);
+  }, []);
+
+  return {
+    user,
+    loading,
+    error,
+    isAuthenticated: Boolean(user),
+    requiresPasswordReset,
+    refresh,
+    login: signIn,
+    signup: signUp,
+    signInWithGoogle,
+    recover,
+    completePasswordRecovery,
+    logout,
+  };
 }

@@ -1,6 +1,6 @@
-/**
- * Caderno de Campo Pedagógico — página editorial assimétrica em papel mineral,
- * tinta azul-marinho e acentos Vermelho Caderno. Leitura clara antes de decoração.
+﻿/**
+ * Caderno de Campo PedagÃ³gico â€” pÃ¡gina editorial assimÃ©trica em papel mineral,
+ * tinta azul-marinho e acentos Vermelho Caderno. Leitura clara antes de decoraÃ§Ã£o.
  */
 import { useEffect, useMemo, useState } from "react";
 import { jsPDF } from "jspdf";
@@ -79,25 +79,25 @@ type Attempt = {
 };
 
 const areaMeta: Record<AreaName, { short: string; color: string; pale: string; bar: string; index: string }> = {
-  "Linguagens, Códigos e suas Tecnologias": { short: "Linguagens", color: "#C84D3A", pale: "#F5E1D9", bar: "#C84D3A", index: "01" },
-  "Ciências Humanas e suas Tecnologias": { short: "Humanas", color: "#8A6B2D", pale: "#F1E8CC", bar: "#B28A3A", index: "02" },
-  "Ciências da Natureza e suas Tecnologias": { short: "Natureza", color: "#497464", pale: "#DDEBE5", bar: "#5D8C78", index: "03" },
-  "Matemática e suas Tecnologias": { short: "Matemática", color: "#1D4C72", pale: "#DDE8F1", bar: "#3B709D", index: "04" },
+  "Linguagens, CÃ³digos e suas Tecnologias": { short: "Linguagens", color: "#C84D3A", pale: "#F5E1D9", bar: "#C84D3A", index: "01" },
+  "CiÃªncias Humanas e suas Tecnologias": { short: "Humanas", color: "#8A6B2D", pale: "#F1E8CC", bar: "#B28A3A", index: "02" },
+  "CiÃªncias da Natureza e suas Tecnologias": { short: "Natureza", color: "#497464", pale: "#DDEBE5", bar: "#5D8C78", index: "03" },
+  "MatemÃ¡tica e suas Tecnologias": { short: "MatemÃ¡tica", color: "#1D4C72", pale: "#DDE8F1", bar: "#3B709D", index: "04" },
 };
 
 const chartColors = ["#C84D3A", "#B28A3A", "#5D8C78", "#3B709D"];
 const operationData = [
-  { name: "Leitura e argumentação", value: 32 },
-  { name: "Modelagem e cálculo", value: 25 },
-  { name: "Análise de fenômenos", value: 25 },
-  { name: "Contexto histórico-social", value: 18 },
+  { name: "Leitura e argumentaÃ§Ã£o", value: 32 },
+  { name: "Modelagem e cÃ¡lculo", value: 25 },
+  { name: "AnÃ¡lise de fenÃ´menos", value: 25 },
+  { name: "Contexto histÃ³rico-social", value: 18 },
 ];
 
 type TimerPreset = "dia1" | "dia2";
 
 const timerPresets: Record<TimerPreset, { label: string; seconds: number }> = {
-  dia1: { label: "1.º dia · 5h30", seconds: 5 * 60 * 60 + 30 * 60 },
-  dia2: { label: "2.º dia · 5h", seconds: 5 * 60 * 60 },
+  dia1: { label: "1.Âº dia Â· 5h30", seconds: 5 * 60 * 60 + 30 * 60 },
+  dia2: { label: "2.Âº dia Â· 5h", seconds: 5 * 60 * 60 },
 };
 
 const ATTEMPTS_STORAGE_KEY = "simulado-enem-attempts-v1";
@@ -106,8 +106,8 @@ const PROGRESS_STORAGE_KEY = "simulado-enem-progress-v1";
 const attemptAreaSummary = areaSummary.map((entry) => ({ ...entry, count: QUESTIONS_PER_AREA_PER_ATTEMPT }));
 
 const CADERNO_PRINT_BLOCKS: Array<CadernoPrintBlock & { label: string; description: string }> = [
-  { id: "dia-1", startQuestion: 1, endQuestion: 50, label: "Bloco 1 · Linguagens e Humanas", description: "Questões 01–50 · aplicação do 1.º dia" },
-  { id: "dia-2", startQuestion: 51, endQuestion: 100, label: "Bloco 2 · Natureza e Matemática", description: "Questões 51–100 · aplicação do 2.º dia" },
+  { id: "dia-1", startQuestion: 1, endQuestion: 50, label: "Bloco 1 Â· Linguagens e Humanas", description: "QuestÃµes 01â€“50 Â· aplicaÃ§Ã£o do 1.Âº dia" },
+  { id: "dia-2", startQuestion: 51, endQuestion: 100, label: "Bloco 2 Â· Natureza e MatemÃ¡tica", description: "QuestÃµes 51â€“100 Â· aplicaÃ§Ã£o do 2.Âº dia" },
 ];
 
 function normalizeIdentity(value: string, fallback: string) {
@@ -157,19 +157,19 @@ function scrollToSection(id: string) {
 
 function markdownFor(mode: DownloadMode, sourceQuestions: readonly Question[] = questions) {
   const documentTitle = {
-    caderno: "SIMULADO ENEM — Caderno de Questões",
-    gabarito: "SIMULADO ENEM — Gabarito Comentado",
-    mascara: "SIMULADO ENEM — Folha de Respostas e Máscara de Correção",
+    caderno: "SIMULADO ENEM â€” Caderno de QuestÃµes",
+    gabarito: "SIMULADO ENEM â€” Gabarito Comentado",
+    mascara: "SIMULADO ENEM â€” Folha de Respostas e MÃ¡scara de CorreÃ§Ã£o",
   }[mode];
   const header = `# ${documentTitle}\n\nEscola: ________________________________________________________________\nProfessor(a): ___________________________________________________________\nEstudante: _____________________________________________________________\nTurma: ____________________    Data: ____ / ____ / ______\n\n`;
 
   if (mode === "caderno") {
-    return header + `> Material autoral reformulado, elaborado a partir de habilidades, temas e estruturas recorrentes em provas oficiais do ENEM.\n\n` + sourceQuestions.map((q) => `## Questão ${String(q.numero).padStart(2, "0")} — ${q.areaCurta}\n\n${q.enunciado}\n\nA. ${q.alternativas.A}\n\nB. ${q.alternativas.B}\n\nC. ${q.alternativas.C}\n\nD. ${q.alternativas.D}\n`).join("\n---\n\n");
+    return header + `> Material autoral reformulado, elaborado a partir de habilidades, temas e estruturas recorrentes em provas oficiais do ENEM.\n\n` + sourceQuestions.map((q) => `## QuestÃ£o ${String(q.numero).padStart(2, "0")} â€” ${q.areaCurta}\n\n${q.enunciado}\n\nA. ${q.alternativas.A}\n\nB. ${q.alternativas.B}\n\nC. ${q.alternativas.C}\n\nD. ${q.alternativas.D}\n`).join("\n---\n\n");
   }
   if (mode === "gabarito") {
-    return header + sourceQuestions.map((q) => `| ${String(q.numero).padStart(3, "0")} | **${q.correta}** | ${q.habilidade} | ${q.justificativa} |`).join("\n").replace(/^/, "| Questão | Resposta | Habilidade | Justificativa |\n| ---: | :---: | --- | --- |\n");
+    return header + sourceQuestions.map((q) => `| ${String(q.numero).padStart(3, "0")} | **${q.correta}** | ${q.habilidade} | ${q.justificativa} |`).join("\n").replace(/^/, "| QuestÃ£o | Resposta | Habilidade | Justificativa |\n| ---: | :---: | --- | --- |\n");
   }
-  return header + `## Cartão-resposta\n\n| Questão | A | B | C | D |\n| ---: | :---: | :---: | :---: | :---: |\n${sourceQuestions.map((q) => `| ${String(q.numero).padStart(3, "0")} | ○ | ○ | ○ | ○ |`).join("\n")}\n\n---\n\n## Chave de correção\n\n| Questão | Resposta |\n| ---: | :---: |\n${sourceQuestions.map((q) => `| ${String(q.numero).padStart(3, "0")} | **${q.correta}** |`).join("\n")}`;
+  return header + `## CartÃ£o-resposta\n\n| QuestÃ£o | A | B | C | D |\n| ---: | :---: | :---: | :---: | :---: |\n${sourceQuestions.map((q) => `| ${String(q.numero).padStart(3, "0")} | â—‹ | â—‹ | â—‹ | â—‹ |`).join("\n")}\n\n---\n\n## Chave de correÃ§Ã£o\n\n| QuestÃ£o | Resposta |\n| ---: | :---: |\n${sourceQuestions.map((q) => `| ${String(q.numero).padStart(3, "0")} | **${q.correta}** |`).join("\n")}`;
 }
 
 function downloadFile(mode: DownloadMode, sourceQuestions: readonly Question[] = questions) {
@@ -193,14 +193,14 @@ function printableCadernoHtml(selectedQuestions: readonly Question[], selectionL
   return pages.map((page, pageIndex) => {
     const questionHtml = page.map((question) => `
       <article class="print-question">
-        <div class="print-question-meta"><strong>Questão ${String(question.numero).padStart(2, "0")}</strong><span>${escapeHtml(question.areaCurta)}</span></div>
+        <div class="print-question-meta"><strong>QuestÃ£o ${String(question.numero).padStart(2, "0")}</strong><span>${escapeHtml(question.areaCurta)}</span></div>
         <p class="print-stem">${escapeHtml(question.enunciado)}</p>
         <ol class="print-alternatives" type="A">
           ${(["A", "B", "C", "D"] as const).map((letter) => `<li>${escapeHtml(question.alternativas[letter])}</li>`).join("")}
         </ol>
       </article>`).join("");
     const identification = pageIndex === 0 ? `<div class="print-identification"><span>Escola: ______________________________________________</span><span>Professor(a): ________________________________________</span><span>Estudante: __________________________________________</span><span>Turma: ____________________ Data: ____ / ____ / ______</span></div>` : "";
-    return `<section class="print-page"><header class="print-page-header"><span>SIMULADO ENEM INTERATIVO</span><strong>Caderno de questões</strong><span>Folha ${String(pageIndex + 1).padStart(2, "0")} de ${String(pages.length).padStart(2, "0")}</span></header><p class="print-selection">${escapeHtml(selectionLabel)}</p>${identification}${questionHtml}<footer class="print-page-footer"><span>Material autoral reformulado para aplicação pedagógica.</span><span>${pageIndex + 1} / ${pages.length}</span></footer></section>`;
+    return `<section class="print-page"><header class="print-page-header"><span>SIMULADO ENEM INTERATIVO</span><strong>Caderno de questÃµes</strong><span>Folha ${String(pageIndex + 1).padStart(2, "0")} de ${String(pages.length).padStart(2, "0")}</span></header><p class="print-selection">${escapeHtml(selectionLabel)}</p>${identification}${questionHtml}<footer class="print-page-footer"><span>Material autoral reformulado para aplicaÃ§Ã£o pedagÃ³gica.</span><span>${pageIndex + 1} / ${pages.length}</span></footer></section>`;
   }).join("");
 }
 
@@ -208,7 +208,7 @@ function printPreview(selectedQuestions: readonly Question[], selectionLabel: st
   if (!selectedQuestions.length) return false;
   const printWindow = window.open("", "_blank", "noopener,noreferrer");
   if (!printWindow) return false;
-  printWindow.document.write(`<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><title>Simulado ENEM — Caderno</title><style>@page{size:A4;margin:12mm 14mm}*{box-sizing:border-box}body{margin:0;background:#eef0f2;color:#182940;font-family:Arial,sans-serif}.print-page{position:relative;min-height:273mm;overflow:hidden;background:#fff;padding:0 0 15mm;page-break-after:always;break-after:page}.print-page:last-child{page-break-after:auto;break-after:auto}.print-page-header{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:9mm;border-top:3px solid #c84d3a;border-bottom:1px solid #cdd4db;padding:3mm 0 3.4mm;color:#546477;font-size:7.5pt;font-weight:700;letter-spacing:.08em;text-transform:uppercase}.print-page-header strong{color:#1d2a44;font-size:9pt;letter-spacing:.025em;text-transform:none}.print-page-header span:last-child{text-align:right}.print-selection{margin:3mm 0 0;color:#6a7888;font-size:7.5pt;font-weight:700;letter-spacing:.05em;text-transform:uppercase}.print-identification{display:grid;grid-template-columns:1fr 1fr;gap:3.3mm 8mm;margin:5mm 0 4mm;border:1px solid #d6dce0;padding:3.5mm 4mm;color:#3f5066;font-size:8.2pt;line-height:1.25}.print-question{break-inside:avoid;page-break-inside:avoid;padding:4.5mm 0 4.3mm;border-bottom:1px solid #dce1e5}.print-question-meta{display:flex;justify-content:space-between;gap:7mm;color:#6a7888;font-size:7.5pt;text-transform:uppercase;letter-spacing:.075em}.print-question-meta strong{color:#c84d3a;font-size:9.4pt;letter-spacing:.03em}.print-stem{margin:2.2mm 0 2.6mm;color:#1d2a44;font-size:9.8pt;line-height:1.4}.print-alternatives{display:grid;grid-template-columns:1fr 1fr;gap:1.6mm 8mm;margin:0;padding-left:5mm;color:#33455a;font-size:8.9pt;line-height:1.35}.print-alternatives li{padding-left:1mm}.print-page-footer{position:absolute;right:0;bottom:0;left:0;display:flex;justify-content:space-between;border-top:1px solid #d6dce0;padding-top:2.5mm;color:#718092;font-size:7.2pt}@media screen{body{padding:16px}.print-page{width:182mm;min-height:273mm;margin:0 auto 16px;padding:12mm 14mm 15mm;box-shadow:0 5px 18px rgba(22,37,55,.16)}}@media print{body{background:#fff}.print-page{width:auto;margin:0;padding:0 0 15mm;box-shadow:none}}</style></head><body>${printableCadernoHtml(selectedQuestions, selectionLabel)}</body></html>`);
+  printWindow.document.write(`<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><title>Simulado ENEM â€” Caderno</title><style>@page{size:A4;margin:12mm 14mm}*{box-sizing:border-box}body{margin:0;background:#eef0f2;color:#182940;font-family:Arial,sans-serif}.print-page{position:relative;min-height:273mm;overflow:hidden;background:#fff;padding:0 0 15mm;page-break-after:always;break-after:page}.print-page:last-child{page-break-after:auto;break-after:auto}.print-page-header{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:9mm;border-top:3px solid #c84d3a;border-bottom:1px solid #cdd4db;padding:3mm 0 3.4mm;color:#546477;font-size:7.5pt;font-weight:700;letter-spacing:.08em;text-transform:uppercase}.print-page-header strong{color:#1d2a44;font-size:9pt;letter-spacing:.025em;text-transform:none}.print-page-header span:last-child{text-align:right}.print-selection{margin:3mm 0 0;color:#6a7888;font-size:7.5pt;font-weight:700;letter-spacing:.05em;text-transform:uppercase}.print-identification{display:grid;grid-template-columns:1fr 1fr;gap:3.3mm 8mm;margin:5mm 0 4mm;border:1px solid #d6dce0;padding:3.5mm 4mm;color:#3f5066;font-size:8.2pt;line-height:1.25}.print-question{break-inside:avoid;page-break-inside:avoid;padding:4.5mm 0 4.3mm;border-bottom:1px solid #dce1e5}.print-question-meta{display:flex;justify-content:space-between;gap:7mm;color:#6a7888;font-size:7.5pt;text-transform:uppercase;letter-spacing:.075em}.print-question-meta strong{color:#c84d3a;font-size:9.4pt;letter-spacing:.03em}.print-stem{margin:2.2mm 0 2.6mm;color:#1d2a44;font-size:9.8pt;line-height:1.4}.print-alternatives{display:grid;grid-template-columns:1fr 1fr;gap:1.6mm 8mm;margin:0;padding-left:5mm;color:#33455a;font-size:8.9pt;line-height:1.35}.print-alternatives li{padding-left:1mm}.print-page-footer{position:absolute;right:0;bottom:0;left:0;display:flex;justify-content:space-between;border-top:1px solid #d6dce0;padding-top:2.5mm;color:#718092;font-size:7.2pt}@media screen{body{padding:16px}.print-page{width:182mm;min-height:273mm;margin:0 auto 16px;padding:12mm 14mm 15mm;box-shadow:0 5px 18px rgba(22,37,55,.16)}}@media print{body{background:#fff}.print-page{width:auto;margin:0;padding:0 0 15mm;box-shadow:none}}</style></head><body>${printableCadernoHtml(selectedQuestions, selectionLabel)}</body></html>`);
   printWindow.document.close();
   printWindow.focus();
   window.setTimeout(() => printWindow.print(), 300);
@@ -219,7 +219,7 @@ function StudentAccessGate({ email, error, onChange, onSubmit }: { email: string
   return (
     <div className="student-access-gate" role="region" aria-labelledby="student-access-title">
       <div className="student-access-icon"><Mail size={22} /></div>
-      <div className="student-access-copy"><span className="mini-label">IDENTIFICAÇÃO OBRIGATÓRIA</span><h3 id="student-access-title">Entre com seu e-mail institucional.</h3><p>O simulado é liberado somente para estudantes com endereço terminado em <strong>@escola.pr.gov.br</strong>. O e-mail identifica seu ciclo de três tentativas neste navegador.</p></div>
+      <div className="student-access-copy"><span className="mini-label">IDENTIFICAÃ‡ÃƒO OBRIGATÃ“RIA</span><h3 id="student-access-title">Entre com seu e-mail institucional.</h3><p>O simulado Ã© liberado somente para estudantes com endereÃ§o terminado em <strong>@escola.pr.gov.br</strong>. O e-mail identifica seu ciclo de trÃªs tentativas neste navegador.</p></div>
       <form className="student-access-form" onSubmit={onSubmit}>
         <label className="student-name"><Mail size={16} /><span>E-mail institucional</span><input type="email" value={email} onChange={(event) => onChange(event.target.value)} placeholder="nome@escola.pr.gov.br" autoComplete="email" required /></label>
         <button type="submit" className="timer-start">Liberar simulado <ArrowRight size={15} /></button>
@@ -239,7 +239,7 @@ function QuestionCard({ q, selected, onSelect, revealed, onReveal, canReveal, di
         <span className="question-reference">{q.referencia}</span>
       </div>
       <p className="question-stem">{q.enunciado}</p>
-      <div className="alternatives" role="radiogroup" aria-label={`Alternativas da questão ${q.numero}`}>
+      <div className="alternatives" role="radiogroup" aria-label={`Alternativas da questÃ£o ${q.numero}`}>
         {(["A", "B", "C", "D"] as const).map((letter) => {
           const isSelected = selected === letter;
           const isCorrect = revealed && q.correta === letter;
@@ -253,10 +253,10 @@ function QuestionCard({ q, selected, onSelect, revealed, onReveal, canReveal, di
         })}
       </div>
       <div className="question-footer">
-        <span>Referência curricular: <strong>{q.areaCurta}</strong></span>
-        {canReveal ? <button className="reveal-button" onClick={onReveal}>{revealed ? `Resposta: ${q.correta}` : "Ver resposta comentada"}</button> : <span className="answer-locked">Finalize a correção para consultar o comentário.</span>}
+        <span>ReferÃªncia curricular: <strong>{q.areaCurta}</strong></span>
+        {canReveal ? <button className="reveal-button" onClick={onReveal}>{revealed ? `Resposta: ${q.correta}` : "Ver resposta comentada"}</button> : <span className="answer-locked">Finalize a correÃ§Ã£o para consultar o comentÃ¡rio.</span>}
       </div>
-      {revealed && <p className="answer-explanation"><strong>Por quê?</strong> {q.justificativa}</p>}
+      {revealed && <p className="answer-explanation"><strong>Por quÃª?</strong> {q.justificativa}</p>}
     </article>
   );
 }
@@ -307,13 +307,13 @@ export default function Home() {
     event.preventDefault();
     const normalizedEmail = studentEmail.trim().toLocaleLowerCase("pt-BR");
     if (!isInstitutionalEmail(normalizedEmail)) {
-      setIdentificationError("Informe um e-mail institucional válido, terminado em @escola.pr.gov.br.");
+      setIdentificationError("Informe um e-mail institucional vÃ¡lido, terminado em @escola.pr.gov.br.");
       return;
     }
     setStudentEmail(normalizedEmail);
     setStudentIdentified(true);
     setIdentificationError("");
-    setProgressNotice("Identificação institucional confirmada. Seu conjunto de questões foi preparado.");
+    setProgressNotice("IdentificaÃ§Ã£o institucional confirmada. Seu conjunto de questÃµes foi preparado.");
     scrollToSection("questoes");
   };
   const openAuth = (mode: "login" | "signup", context: "student" | "developer" = "student") => {
@@ -374,7 +374,7 @@ export default function Home() {
     try {
       const draft = JSON.parse(window.localStorage.getItem(PROGRESS_STORAGE_KEY) || "null");
       if (draft?.answers && typeof draft.savedAt === "string" && isCurrentLocalDay(draft.savedAt)) { setAnswers(draft.answers); setRemainingSeconds(draft.remainingSeconds ?? timerPresets.dia1.seconds); setProgressNotice("Progresso anterior restaurado."); }
-    } catch { /* ignorar rascunho inválido */ }
+    } catch { /* ignorar rascunho invÃ¡lido */ }
   }, []);
 
   useEffect(() => {
@@ -409,14 +409,14 @@ export default function Home() {
       if (Array.isArray(synced.attempts)) setAttempts(synced.attempts);
       setSyncState("cloud");
       setProgressNotice("Progresso sincronizado com sua conta.");
-    } catch { /* ignorar dados remotos inválidos */ }
+    } catch { /* ignorar dados remotos invÃ¡lidos */ }
   }, [remotePayload]);
 
   const simulationScore = useMemo(() => calculateSimulationScore(attemptQuestions, answers), [attemptQuestions, answers]);
   const attemptPrintQuestions = useMemo(() => attemptQuestions.map((question, index) => ({ ...question, numero: index + 1 })), [attemptQuestions]);
   const selectedCadernoQuestions = useMemo(() => selectCadernoPrintBlocks(attemptPrintQuestions, CADERNO_PRINT_BLOCKS, selectedCadernoBlocks), [attemptPrintQuestions, selectedCadernoBlocks]);
   const selectedCadernoPages = useMemo(() => paginateCadernoForPrint(selectedCadernoQuestions), [selectedCadernoQuestions]);
-  const selectedCadernoLabel = useMemo(() => CADERNO_PRINT_BLOCKS.filter((block) => selectedCadernoBlocks.includes(block.id)).map((block) => block.label.replace("Bloco ", "B.")).join(" · "), [selectedCadernoBlocks]);
+  const selectedCadernoLabel = useMemo(() => CADERNO_PRINT_BLOCKS.filter((block) => selectedCadernoBlocks.includes(block.id)).map((block) => block.label.replace("Bloco ", "B.")).join(" Â· "), [selectedCadernoBlocks]);
   const areaPerformance = simulationScore.byArea;
   const totalAnswered = simulationScore.answered;
   const totalCorrect = simulationScore.correct;
@@ -440,9 +440,9 @@ export default function Home() {
   const wrongQuestions = useMemo(() => latestAttempt?.answers ? attemptQuestions.filter((q) => latestAttempt.answers[q.numero] && latestAttempt.answers[q.numero] !== q.correta) : [], [attemptQuestions, latestAttempt]);
   const performanceMessage = totalAnswered === 0
     ? "Registre suas respostas para iniciar a leitura do desempenho."
-    : overallPercentage >= 70 ? "Bom domínio do conjunto. Observe as áreas com menor percentual para orientar a revisão."
-      : overallPercentage >= 45 ? "Há uma base de aprendizagem consistente; use os detalhes por área para organizar a próxima revisão."
-        : "O resultado mostra pontos concretos para retomar. Priorize uma área por vez e compare as respostas comentadas.";
+    : overallPercentage >= 70 ? "Bom domÃ­nio do conjunto. Observe as Ã¡reas com menor percentual para orientar a revisÃ£o."
+      : overallPercentage >= 45 ? "HÃ¡ uma base de aprendizagem consistente; use os detalhes por Ã¡rea para organizar a prÃ³xima revisÃ£o."
+        : "O resultado mostra pontos concretos para retomar. Priorize uma Ã¡rea por vez e compare as respostas comentadas.";
 
   const setAnswer = (numero: number, answer: string) => {
     if (submitted || maxAttemptsReached) return;
@@ -470,7 +470,7 @@ export default function Home() {
       setProgressNotice("Progresso salvo e sincronizado com sua conta.");
     } catch {
       setSyncState("error");
-      setProgressNotice("Progresso salvo neste navegador; a sincronização será tentada no próximo salvamento.");
+      setProgressNotice("Progresso salvo neste navegador; a sincronizaÃ§Ã£o serÃ¡ tentada no prÃ³ximo salvamento.");
     }
   };
   const finishSimulation = () => {
@@ -515,13 +515,13 @@ export default function Home() {
     const payload = { answers, remainingSeconds, studentEmail, studentName, classroom, attempts, savedAt: new Date().toISOString() };
     window.localStorage.setItem(PROGRESS_STORAGE_KEY, JSON.stringify(payload));
     if (isAuthenticated) void syncProgress(payload);
-    else setProgressNotice("Progresso salvo neste navegador. Entre na sua conta para sincronizá-lo entre dispositivos.");
+    else setProgressNotice("Progresso salvo neste navegador. Entre na sua conta para sincronizÃ¡-lo entre dispositivos.");
   };
   const exportAllAttemptsCsv = () => {
-    const header = ["Estudante", "Turma", "Data", "Acertos", "Respondidas", "Percentual", "Tempo restante", "Linguagens", "Humanas", "Natureza", "Matemática"];
+    const header = ["Estudante", "Turma", "Data", "Acertos", "Respondidas", "Percentual", "Tempo restante", "Linguagens", "Humanas", "Natureza", "MatemÃ¡tica"];
     const rows = attempts.map((attempt) => {
       const byArea = new Map(attempt.byArea.map((area) => [area.short, area.percentage]));
-      return [attempt.studentName, attempt.classroom, new Date(attempt.createdAt).toLocaleString("pt-BR"), attempt.correct, attempt.answered, `${attempt.percentage}%`, formatDuration(attempt.remainingSeconds), byArea.get("Linguagens") ?? "", byArea.get("Humanas") ?? "", byArea.get("Natureza") ?? "", byArea.get("Matemática") ?? ""];
+      return [attempt.studentName, attempt.classroom, new Date(attempt.createdAt).toLocaleString("pt-BR"), attempt.correct, attempt.answered, `${attempt.percentage}%`, formatDuration(attempt.remainingSeconds), byArea.get("Linguagens") ?? "", byArea.get("Humanas") ?? "", byArea.get("Natureza") ?? "", byArea.get("MatemÃ¡tica") ?? ""];
     });
     const content = "\uFEFF" + [header, ...rows].map((row) => row.map(csvCell).join(",")).join("\n");
     const href = URL.createObjectURL(new Blob([content], { type: "text/csv;charset=utf-8" }));
@@ -538,10 +538,10 @@ export default function Home() {
     doc.setTextColor(255, 250, 242);
     doc.setFont("helvetica", "bold");
     doc.setFontSize(17);
-    doc.text("SIMULADO ENEM — RESULTADO INDIVIDUAL", 15, 16);
+    doc.text("SIMULADO ENEM â€” RESULTADO INDIVIDUAL", 15, 16);
     doc.setFont("helvetica", "normal");
     doc.setFontSize(8.5);
-    doc.text("Relatório de desempenho gerado localmente", 15, 23);
+    doc.text("RelatÃ³rio de desempenho gerado localmente", 15, 23);
     doc.setTextColor(29, 42, 68);
     y = 46;
     doc.setFont("helvetica", "bold");
@@ -550,7 +550,7 @@ export default function Home() {
     doc.setFont("helvetica", "normal");
     doc.setFontSize(9);
     doc.setTextColor(91, 102, 117);
-    doc.text(`Tentativa ${Math.max(1, attemptsUsed)} de ${MAX_DAILY_ATTEMPTS} · Gerado em ${new Date().toLocaleDateString("pt-BR")} · Tempo restante: ${formatDuration(remainingSeconds)}`, 15, y + 6);
+    doc.text(`Tentativa ${Math.max(1, attemptsUsed)} de ${MAX_DAILY_ATTEMPTS} Â· Gerado em ${new Date().toLocaleDateString("pt-BR")} Â· Tempo restante: ${formatDuration(remainingSeconds)}`, 15, y + 6);
     doc.setFillColor(244, 237, 227);
     doc.roundedRect(15, y + 15, pageWidth - 30, 28, 2, 2, "F");
     doc.setTextColor(29, 42, 68);
@@ -563,7 +563,7 @@ export default function Home() {
     doc.text(`${totalCorrect} acertos em 100 itens`, 52, y + 34);
     y += 55;
     doc.setFontSize(12);
-    doc.text("Desempenho detalhado por área", 15, y);
+    doc.text("Desempenho detalhado por Ã¡rea", 15, y);
     y += 8;
     areaPerformance.forEach((area, index) => {
       const meta = areaMeta[area.area as AreaName];
@@ -571,7 +571,7 @@ export default function Home() {
       doc.setFillColor(parseInt(hex.slice(0, 2), 16), parseInt(hex.slice(2, 4), 16), parseInt(hex.slice(4, 6), 16));
       doc.rect(15, y + index * 8, area.percentage * 1.4, 4, "F");
       doc.setTextColor(29, 42, 68); doc.setFontSize(7.5);
-      doc.text(`${area.short} — ${area.percentage}%`, 158, y + 3 + index * 8, { align: "right" });
+      doc.text(`${area.short} â€” ${area.percentage}%`, 158, y + 3 + index * 8, { align: "right" });
     });
     y += 38;
     areaPerformance.forEach((area) => {
@@ -587,7 +587,7 @@ export default function Home() {
       doc.setFont("helvetica", "normal");
       doc.setFontSize(8.5);
       doc.setTextColor(91, 102, 117);
-      doc.text(`${area.correct}/25 acertos · ${area.answered}/25 respondidas · ${area.blank} em branco`, 23, y + 7);
+      doc.text(`${area.correct}/25 acertos Â· ${area.answered}/25 respondidas Â· ${area.blank} em branco`, 23, y + 7);
       doc.setTextColor(29, 42, 68);
       doc.setFont("helvetica", "bold");
       doc.setFontSize(13);
@@ -601,15 +601,15 @@ export default function Home() {
     doc.setFont("helvetica", "bold");
     doc.setFontSize(10);
     doc.setTextColor(29, 42, 68);
-    doc.text("Leitura pedagógica", 15, y + 13);
+    doc.text("Leitura pedagÃ³gica", 15, y + 13);
     doc.setFont("helvetica", "normal");
     doc.setFontSize(8.6);
     doc.setTextColor(91, 102, 117);
-    const observation = doc.splitTextToSize(performanceMessage + " A pontuação representa acertos simples neste simulado; não equivale à nota TRI do ENEM.", pageWidth - 30);
+    const observation = doc.splitTextToSize(performanceMessage + " A pontuaÃ§Ã£o representa acertos simples neste simulado; nÃ£o equivale Ã  nota TRI do ENEM.", pageWidth - 30);
     doc.text(observation, 15, y + 19);
     doc.setFontSize(7.5);
     doc.setTextColor(120, 128, 138);
-    doc.text("Simulado ENEM Interativo · Material autoral reformulado para prática pedagógica.", 15, pageHeight - 12);
+    doc.text("Simulado ENEM Interativo Â· Material autoral reformulado para prÃ¡tica pedagÃ³gica.", 15, pageHeight - 12);
     const safeName = reportName.normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-zA-Z0-9]+/g, "-").replace(/^-|-$/g, "").toLowerCase() || "estudante";
     doc.save(`resultado-simulado-enem-${safeName}.pdf`);
   };
@@ -626,11 +626,11 @@ export default function Home() {
       doc.setTextColor(255, 250, 242);
       doc.setFont("helvetica", "bold");
       doc.setFontSize(13);
-      doc.text("SIMULADO ENEM — CADERNO DE QUESTÕES", 15, 12);
+      doc.text("SIMULADO ENEM â€” CADERNO DE QUESTÃ•ES", 15, 12);
       doc.setFont("helvetica", "normal");
       doc.setFontSize(7.5);
-      doc.text("Material autoral reformulado para aplicação pedagógica", 15, 18);
-      doc.text(`${selectionLabel} · Folha ${String(page).padStart(2, "0")}`, pageWidth - 15, 18, { align: "right" });
+      doc.text("Material autoral reformulado para aplicaÃ§Ã£o pedagÃ³gica", 15, 18);
+      doc.text(`${selectionLabel} Â· Folha ${String(page).padStart(2, "0")}`, pageWidth - 15, 18, { align: "right" });
       doc.setTextColor(29, 42, 68);
     };
     const drawFooter = (pageNumber: number) => {
@@ -656,7 +656,7 @@ export default function Home() {
       doc.setTextColor(200, 77, 58);
       doc.setFont("helvetica", "bold");
       doc.setFontSize(10.5);
-      doc.text(`Questão ${String(question.numero).padStart(2, "0")}`, 15, y);
+      doc.text(`QuestÃ£o ${String(question.numero).padStart(2, "0")}`, 15, y);
       doc.setTextColor(101, 112, 128);
       doc.setFontSize(7.5);
       doc.text(question.areaCurta, pageWidth - 15, y, { align: "right" });
@@ -695,21 +695,21 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-[#F7F3EC] text-[#1D2A44]">
       <header className="topbar">
-        <a href="#inicio" className="brand" aria-label="Ir para o início">
-          <img src="/manus-storage/enem-logo-symbol_049e20d0.png" alt="Símbolo do Simulado ENEM" className="brand-mark" />
+        <a href="#inicio" className="brand" aria-label="Ir para o inÃ­cio">
+          <img src="/simulado-enem-logo.svg" alt="SÃ­mbolo do Simulado ENEM" className="brand-mark" />
           <span className="brand-word"><strong>SIMULADO</strong><em>ENEM</em></span>
         </a>
-        <nav className={`main-nav ${menuOpen ? "open" : ""}`} aria-label="Navegação principal">
+        <nav className={`main-nav ${menuOpen ? "open" : ""}`} aria-label="NavegaÃ§Ã£o principal">
           <button onClick={() => { scrollToSection("matriz"); setMenuOpen(false); }}>Matriz</button>
-          <button onClick={() => { scrollToSection("questoes"); setMenuOpen(false); }}>Questões</button>
+          <button onClick={() => { scrollToSection("questoes"); setMenuOpen(false); }}>QuestÃµes</button>
           <button onClick={() => { scrollToSection("resultado"); setMenuOpen(false); }}>Resultado</button>
           {maxAttemptsReached && <button onClick={() => { scrollToSection("acompanhamento"); setMenuOpen(false); }}>Acompanhamento</button>}
-          {teacherMode && <button onClick={() => { scrollToSection("correcao"); setMenuOpen(false); }}>Correção</button>}
+          {teacherMode && <button onClick={() => { scrollToSection("correcao"); setMenuOpen(false); }}>CorreÃ§Ã£o</button>}
           <button onClick={() => { scrollToSection("fontes"); setMenuOpen(false); }}>Fontes</button>
         </nav>
         <div className="top-actions">
-          {!loading && (isAuthenticated ? <><span className={`top-timer ${syncState}`}>{syncState === "cloud" ? "✓ Sincronizado" : syncState === "syncing" ? "↻ Sincronizando" : syncState === "error" ? "! Salvo localmente" : "• Sem salvar"}</span><button className="top-timer" onClick={() => void logout()}>Sair da conta</button></> : <button className="top-timer" onClick={() => openAuth("login")}>Acesso aluno</button>)}
-          <button className={`top-timer ${isCriticalTime ? "critical" : ""}`} onClick={() => scrollToSection("questoes")} aria-label="Ir para o cronômetro"><Timer size={15} /><span>{formatDuration(remainingSeconds)}</span></button>
+          {!loading && (isAuthenticated ? <><span className={`top-timer ${syncState}`}>{syncState === "cloud" ? "âœ“ Sincronizado" : syncState === "syncing" ? "â†» Sincronizando" : syncState === "error" ? "! Salvo localmente" : "â€¢ Sem salvar"}</span><button className="top-timer" onClick={() => void logout()}>Sair da conta</button></> : <button className="top-timer" onClick={() => openAuth("login")}>Acesso aluno</button>)}
+          <button className={`top-timer ${isCriticalTime ? "critical" : ""}`} onClick={() => scrollToSection("questoes")} aria-label="Ir para o cronÃ´metro"><Timer size={15} /><span>{formatDuration(remainingSeconds)}</span></button>
           {teacherMode && <Button className="print-button" onClick={() => requestCadernoOutput("print")}><Printer size={16} /> Imprimir caderno</Button>}
           <button className="menu-button" aria-label="Abrir menu" onClick={() => setMenuOpen((value) => !value)}>{menuOpen ? <X size={20} /> : <Menu size={20} />}</button>
         </div>
@@ -718,26 +718,27 @@ export default function Home() {
       <StudentAuthDialog open={authOpen} onOpenChange={setAuthOpen} initialMode={authInitialMode} context={authContext} onLogin={loginFromDialog} onSignup={signup} onRecover={recover} requiresPasswordReset={requiresPasswordReset} onCompletePasswordRecovery={completePasswordRecovery} />
       <AlertDialog open={printDialogOpen} onOpenChange={setPrintDialogOpen}>
         <AlertDialogContent className="max-h-[90vh] overflow-y-auto border-[#D8D0C3] bg-[#FDFBF6] text-[#1D2A44] sm:max-w-3xl">
-          <AlertDialogHeader><AlertDialogTitle className="font-serif text-2xl">Preparar caderno docente</AlertDialogTitle><AlertDialogDescription className="text-[#5B697A]">Escolha os blocos e revise a paginação A4 antes de {cadernoOutputMode === "pdf" ? "gerar o PDF" : "abrir a impressão"}.</AlertDialogDescription></AlertDialogHeader>
-          <section className="mt-1 border-y border-[#DED6C8] py-4" aria-labelledby="blocos-caderno"><div className="mb-3 flex items-end justify-between gap-4"><div><h3 id="blocos-caderno" className="text-sm font-extrabold text-[#1D2A44]">Blocos de aplicação</h3><p className="mt-1 text-xs text-[#657083]">Cada bloco reúne 50 questões. Você pode combinar os dois ou aplicar apenas um dia.</p></div><span className="shrink-0 text-xs font-bold text-[#C84D3A]">{selectedCadernoQuestions.length} itens</span></div><div className="grid gap-2 sm:grid-cols-2">{CADERNO_PRINT_BLOCKS.map((block) => { const selected = selectedCadernoBlocks.includes(block.id); return <label key={block.id} className={`cursor-pointer border p-3 transition-colors ${selected ? "border-[#1D2A44] bg-[#EEF2F4]" : "border-[#D8D0C3] bg-white"}`}><input type="checkbox" className="sr-only" checked={selected} onChange={() => toggleCadernoBlock(block.id)} /><span className="flex items-start gap-2"><span className={`mt-0.5 grid h-4 w-4 place-items-center border text-[10px] ${selected ? "border-[#1D2A44] bg-[#1D2A44] text-white" : "border-[#AEB7BD] bg-white text-transparent"}`}><Check size={11} /></span><span><strong className="block text-xs text-[#1D2A44]">{block.label}</strong><span className="mt-1 block text-[11px] leading-snug text-[#657083]">{block.description}</span></span></span></label>; })}</div></section>
-          <section className="mt-4" aria-labelledby="previa-caderno"><div className="flex items-end justify-between gap-4"><div><h3 id="previa-caderno" className="text-sm font-extrabold text-[#1D2A44]">Pré-visualização da impressão</h3><p className="mt-1 text-xs text-[#657083]">A paginação usa até quatro questões por folha, com cabeçalho, rodapé e identificação.</p></div><span className="shrink-0 text-xs font-bold text-[#497464]">{selectedCadernoPages.length} {selectedCadernoPages.length === 1 ? "folha" : "folhas"}</span></div>{selectedCadernoPages.length ? <div className="mt-3 grid max-h-48 grid-cols-2 gap-3 overflow-y-auto pr-1 sm:grid-cols-3">{selectedCadernoPages.map((previewPage, index) => <article className="min-h-28 border border-[#D8D0C3] bg-white p-3 shadow-[3px_3px_0_#E7E0D5]" key={`${previewPage[0]?.numero}-${index}`}><div className="flex justify-between border-b border-[#E4DCD0] pb-1 text-[9px] font-extrabold uppercase tracking-wider text-[#697483]"><span>Folha {String(index + 1).padStart(2, "0")}</span><span>{previewPage.length} itens</span></div><ol className="mt-2 grid gap-1 text-[10px] leading-snug text-[#3F5066]">{previewPage.map((question) => <li key={question.numero}><strong className="text-[#C84D3A]">{String(question.numero).padStart(2, "0")}</strong> · {question.areaCurta}</li>)}</ol></article>)}</div> : <p className="mt-3 border border-dashed border-[#C84D3A] bg-[#FCE8E3] p-3 text-xs text-[#8B3529]">Selecione pelo menos um bloco para continuar.</p>}</section>
-          <AlertDialogFooter className="mt-5"><AlertDialogCancel>Cancelar</AlertDialogCancel><AlertDialogAction disabled={!selectedCadernoQuestions.length} className="bg-[#1D2A44] text-white hover:bg-[#2B4164] disabled:cursor-not-allowed disabled:opacity-50" onClick={confirmCadernoOutput}>{cadernoOutputMode === "pdf" ? <><FileDown size={15} /> Gerar PDF</> : <><Printer size={15} /> Abrir impressão</>}</AlertDialogAction></AlertDialogFooter>
+          <AlertDialogHeader><AlertDialogTitle className="font-serif text-2xl">Preparar caderno docente</AlertDialogTitle><AlertDialogDescription className="text-[#5B697A]">Escolha os blocos e revise a paginaÃ§Ã£o A4 antes de {cadernoOutputMode === "pdf" ? "gerar o PDF" : "abrir a impressÃ£o"}.</AlertDialogDescription></AlertDialogHeader>
+          <section className="mt-1 border-y border-[#DED6C8] py-4" aria-labelledby="blocos-caderno"><div className="mb-3 flex items-end justify-between gap-4"><div><h3 id="blocos-caderno" className="text-sm font-extrabold text-[#1D2A44]">Blocos de aplicaÃ§Ã£o</h3><p className="mt-1 text-xs text-[#657083]">Cada bloco reÃºne 50 questÃµes. VocÃª pode combinar os dois ou aplicar apenas um dia.</p></div><span className="shrink-0 text-xs font-bold text-[#C84D3A]">{selectedCadernoQuestions.length} itens</span></div><div className="grid gap-2 sm:grid-cols-2">{CADERNO_PRINT_BLOCKS.map((block) => { const selected = selectedCadernoBlocks.includes(block.id); return <label key={block.id} className={`cursor-pointer border p-3 transition-colors ${selected ? "border-[#1D2A44] bg-[#EEF2F4]" : "border-[#D8D0C3] bg-white"}`}><input type="checkbox" className="sr-only" checked={selected} onChange={() => toggleCadernoBlock(block.id)} /><span className="flex items-start gap-2"><span className={`mt-0.5 grid h-4 w-4 place-items-center border text-[10px] ${selected ? "border-[#1D2A44] bg-[#1D2A44] text-white" : "border-[#AEB7BD] bg-white text-transparent"}`}><Check size={11} /></span><span><strong className="block text-xs text-[#1D2A44]">{block.label}</strong><span className="mt-1 block text-[11px] leading-snug text-[#657083]">{block.description}</span></span></span></label>; })}</div></section>
+          <section className="mt-4" aria-labelledby="previa-caderno"><div className="flex items-end justify-between gap-4"><div><h3 id="previa-caderno" className="text-sm font-extrabold text-[#1D2A44]">PrÃ©-visualizaÃ§Ã£o da impressÃ£o</h3><p className="mt-1 text-xs text-[#657083]">A paginaÃ§Ã£o usa atÃ© quatro questÃµes por folha, com cabeÃ§alho, rodapÃ© e identificaÃ§Ã£o.</p></div><span className="shrink-0 text-xs font-bold text-[#497464]">{selectedCadernoPages.length} {selectedCadernoPages.length === 1 ? "folha" : "folhas"}</span></div>{selectedCadernoPages.length ? <div className="mt-3 grid max-h-48 grid-cols-2 gap-3 overflow-y-auto pr-1 sm:grid-cols-3">{selectedCadernoPages.map((previewPage, index) => <article className="min-h-28 border border-[#D8D0C3] bg-white p-3 shadow-[3px_3px_0_#E7E0D5]" key={`${previewPage[0]?.numero}-${index}`}><div className="flex justify-between border-b border-[#E4DCD0] pb-1 text-[9px] font-extrabold uppercase tracking-wider text-[#697483]"><span>Folha {String(index + 1).padStart(2, "0")}</span><span>{previewPage.length} itens</span></div><ol className="mt-2 grid gap-1 text-[10px] leading-snug text-[#3F5066]">{previewPage.map((question) => <li key={question.numero}><strong className="text-[#C84D3A]">{String(question.numero).padStart(2, "0")}</strong> Â· {question.areaCurta}</li>)}</ol></article>)}</div> : <p className="mt-3 border border-dashed border-[#C84D3A] bg-[#FCE8E3] p-3 text-xs text-[#8B3529]">Selecione pelo menos um bloco para continuar.</p>}</section>
+          <AlertDialogFooter className="mt-5"><AlertDialogCancel>Cancelar</AlertDialogCancel><AlertDialogAction disabled={!selectedCadernoQuestions.length} className="bg-[#1D2A44] text-white hover:bg-[#2B4164] disabled:cursor-not-allowed disabled:opacity-50" onClick={confirmCadernoOutput}>{cadernoOutputMode === "pdf" ? <><FileDown size={15} /> Gerar PDF</> : <><Printer size={15} /> Abrir impressÃ£o</>}</AlertDialogAction></AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
 
       <main id="inicio">
         <section className="hero-section">
           <div className="hero-content">
-            <div className="eyebrow"><span></span> Caderno autoral reformulado · 100 itens</div>
-            <h1>Revisão que vira <i>diagnóstico.</i></h1>
-<p>Um caderno de simulado para aplicar, interpretar e corrigir: 25 questões por área, quatro alternativas e uma estrutura pronta para a sala de aula.</p>            <div className="hero-actions">
+            <div className="eyebrow"><span></span> Caderno autoral reformulado Â· 100 itens</div>
+            <h1>RevisÃ£o que vira <i>diagnÃ³stico.</i></h1>
+            <p>Um caderno de simulado para aplicar, interpretar e corrigir: **25 questÃµes por Ã¡rea**, quatro alternativas e uma estrutura pronta para a sala de aula.</p>
+            <div className="hero-actions">
               <Button onClick={() => scrollToSection("questoes")} className="hero-primary">Iniciar simulado <ArrowRight size={17} /></Button>
-              {teacherMode && <button className="hero-secondary" onClick={() => downloadFile("mascara", attemptPrintQuestions)}><ArrowDownToLine size={17} /> Baixar máscara</button>}
+              {teacherMode && <button className="hero-secondary" onClick={() => downloadFile("mascara", attemptPrintQuestions)}><ArrowDownToLine size={17} /> Baixar mÃ¡scara</button>}
             </div>
-            <div className="hero-note"><Info size={15} /> Itens autorais inspirados em habilidades e temas de provas oficiais; não são reproduções literais.</div>
+            <div className="hero-note"><Info size={15} /> Itens autorais inspirados em habilidades e temas de provas oficiais; nÃ£o sÃ£o reproduÃ§Ãµes literais.</div>
           </div>
           <div className="hero-image-wrap" aria-hidden="true">
-            <img src="/manus-storage/enem-hero-editorial_3a0438a3.jpg" alt="" className="hero-image" />
+            <img src="/simulado-enem-hero.svg" alt="" className="hero-image" />
             <div className="hero-stamp"><strong>4</strong><span>alternativas<br />por item</span></div>
           </div>
         </section>
@@ -750,42 +751,42 @@ export default function Home() {
           </aside>
           <div className="section-body matrix-layout">
             <div className="section-intro">
-              <div><span className="eyebrow"><span></span> Matriz de composição</span><h2>Quatro áreas.<br /><i>Uma leitura equilibrada.</i></h2></div>
-              <p>O ENEM reúne quatro áreas com 45 itens cada. Neste recorte de 100 questões, a divisão proporcional resulta em 25 itens por área.[<a href="#fontes">1</a>]</p>
+              <div><span className="eyebrow"><span></span> Matriz de composiÃ§Ã£o</span><h2>Quatro Ã¡reas.<br /><i>Uma leitura equilibrada.</i></h2></div>
+              <p>O ENEM reÃºne quatro Ã¡reas com 45 itens cada. Neste recorte de 100 questÃµes, a divisÃ£o proporcional resulta em 25 itens por Ã¡rea.[<a href="#fontes">1</a>]</p>
             </div>
             <div className="stat-strip">
-              <div><strong>100</strong><span>questões</span></div>
-              <div><strong>25</strong><span>por área</span></div>
+              <div><strong>100</strong><span>questÃµes</span></div>
+              <div><strong>25</strong><span>por Ã¡rea</span></div>
               <div><strong>4</strong><span>alternativas</span></div>
-              <div><strong>2</strong><span>blocos de aplicação</span></div>
+              <div><strong>2</strong><span>blocos de aplicaÃ§Ã£o</span></div>
             </div>
             <div className="chart-card bar-card">
-              <div className="card-heading"><div><span className="mini-label">DISTRIBUIÇÃO</span><h3>Itens por área de conhecimento</h3></div><BarChart3 size={19} /></div>
+              <div className="card-heading"><div><span className="mini-label">DISTRIBUIÃ‡ÃƒO</span><h3>Itens por Ã¡rea de conhecimento</h3></div><BarChart3 size={19} /></div>
               <div className="chart-visual">
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart data={areaSummary} layout="vertical" margin={{ top: 6, right: 24, left: 2, bottom: 2 }}>
                     <XAxis type="number" domain={[0, 28]} hide />
                     <YAxis dataKey="short" type="category" width={92} tick={{ fill: "#435064", fontSize: 12, fontFamily: "Manrope" }} axisLine={false} tickLine={false} />
-                    <Tooltip cursor={{ fill: "#EAE3D6" }} contentStyle={{ borderRadius: 0, border: "1px solid #D9D0C1", boxShadow: "none", fontFamily: "Manrope", fontSize: 12 }} formatter={(value) => [`${value} questões`, "Quantidade"]} />
+                    <Tooltip cursor={{ fill: "#EAE3D6" }} contentStyle={{ borderRadius: 0, border: "1px solid #D9D0C1", boxShadow: "none", fontFamily: "Manrope", fontSize: 12 }} formatter={(value) => [`${value} questÃµes`, "Quantidade"]} />
                     <Bar dataKey="count" radius={[0, 6, 6, 0]} barSize={20}>{areaSummary.map((entry, index) => <Cell key={entry.short} fill={chartColors[index]} />)}</Bar>
                   </BarChart>
                 </ResponsiveContainer>
               </div>
-              <p className="chart-caption">Passe o cursor pelas barras para consultar a distribuição proporcional.</p>
+              <p className="chart-caption">Passe o cursor pelas barras para consultar a distribuiÃ§Ã£o proporcional.</p>
             </div>
             <div className="chart-card pie-card">
-              <div className="card-heading"><div><span className="mini-label">OPERAÇÕES PRIORIZADAS</span><h3>Como o caderno mobiliza competências</h3></div></div>
+              <div className="card-heading"><div><span className="mini-label">OPERAÃ‡Ã•ES PRIORIZADAS</span><h3>Como o caderno mobiliza competÃªncias</h3></div></div>
               <div className="pie-with-legend">
                 <div className="pie-visual"><ResponsiveContainer width="100%" height="100%"><PieChart><Tooltip contentStyle={{ borderRadius: 0, border: "1px solid #D9D0C1", boxShadow: "none", fontFamily: "Manrope", fontSize: 12 }} formatter={(value) => [`${value} itens`, ""]} /><Pie data={operationData} dataKey="value" nameKey="name" innerRadius={50} outerRadius={78} paddingAngle={3} stroke="none">{operationData.map((entry, index) => <Cell key={entry.name} fill={chartColors[index]} />)}</Pie></PieChart></ResponsiveContainer></div>
                 <div className="legend-list">{operationData.map((entry, index) => <div key={entry.name}><span style={{ background: chartColors[index] }}></span><p>{entry.name}<strong>{entry.value}%</strong></p></div>)}</div>
               </div>
-              <p className="chart-caption">Classificação editorial dos itens do próprio simulado, para apoiar a revisão por operação cognitiva.</p>
+              <p className="chart-caption">ClassificaÃ§Ã£o editorial dos itens do prÃ³prio simulado, para apoiar a revisÃ£o por operaÃ§Ã£o cognitiva.</p>
             </div>
           </div>
         </section>
 
         <section className="area-section">
-          <div className="area-heading"><span className="eyebrow"><span></span> Percurso de estudo</span><h2>Selecione uma área e encontre<br /><i>o tipo de desafio.</i></h2></div>
+          <div className="area-heading"><span className="eyebrow"><span></span> Percurso de estudo</span><h2>Selecione uma Ã¡rea e encontre<br /><i>o tipo de desafio.</i></h2></div>
           <div className="area-cards">
             {areaSummary.map((entry) => {
               const longName = entry.area as AreaName;
@@ -802,82 +803,83 @@ export default function Home() {
           <div className="method-image"><img src="/manus-storage/enem-skills-collage_6f192fac.jpg" alt="Colagem abstrata que representa quatro campos do conhecimento" /></div>
           <div className="method-copy">
             <span className="eyebrow"><span></span> Como foi elaborado</span>
-            <h2>Uma compilação para <i>ensinar</i>, não para copiar.</h2>
-            <p>Os itens foram escritos do zero, a partir da Matriz de Referência e da observação de contextos, habilidades e formatos recorrentes nos cadernos oficiais. A opção por quatro alternativas é uma adaptação solicitada para este simulado.</p>
-            <div className="method-points"><p><Check size={16} /> 1.500 itens autorais e contextualizados</p><p><Check size={16} /> Habilidade, tema e justificativa por questão</p><p><Check size={16} /> Caderno, gabarito e máscara em separado</p></div>
-            <button className="text-button" onClick={() => scrollToSection("fontes")}>Ver referências oficiais <ArrowRight size={16} /></button>
+            <h2>Uma compilaÃ§Ã£o para <i>ensinar</i>, nÃ£o para copiar.</h2>
+            <p>Os itens foram escritos do zero, a partir da Matriz de ReferÃªncia e da observaÃ§Ã£o de contextos, habilidades e formatos recorrentes nos cadernos oficiais. A opÃ§Ã£o por quatro alternativas Ã© uma adaptaÃ§Ã£o solicitada para este simulado.</p>
+            <div className="method-points"><p><Check size={16} /> 1.500 itens autorais e contextualizados</p><p><Check size={16} /> Habilidade, tema e justificativa por questÃ£o</p><p><Check size={16} /> Caderno, gabarito e mÃ¡scara em separado</p></div>
+            <button className="text-button" onClick={() => scrollToSection("fontes")}>Ver referÃªncias oficiais <ArrowRight size={16} /></button>
           </div>
         </section>
 
         <section className="rail-layout question-section" id="questoes">
-          <aside className="section-rail"><span className="rail-index">02</span><span className="rail-line"></span><p>Banco<br />de questões</p></aside>
+          <aside className="section-rail"><span className="rail-index">02</span><span className="rail-line"></span><p>Banco<br />de questÃµes</p></aside>
           <div className="section-body">
             <div className="question-header">
-              <div><span className="eyebrow"><span></span> Leitura ativa</span><h2>Banco de questões<br /><i>para explorar.</i></h2></div>
-              <span className="workbook-note">folha de aplicação<br />marque uma opção</span>
+              <div><span className="eyebrow"><span></span> Leitura ativa</span><h2>Banco de questÃµes<br /><i>para explorar.</i></h2></div>
+              <span className="workbook-note">folha de aplicaÃ§Ã£o<br />marque uma opÃ§Ã£o</span>
               <div className="question-actions"><Button variant="outline" className="download-outline" onClick={() => accessUnlocked && downloadFile("caderno", attemptPrintQuestions)}><ArrowDownToLine size={16} /> Baixar caderno</Button>{teacherMode && <Button className="print-button" onClick={() => requestCadernoOutput("print")}><Printer size={16} /> Imprimir</Button>}</div>
             </div>
             <section className="student-dashboard" id="resultado" aria-label="Painel de desempenho do estudante">
-              <span className="workbook-folio">FOLHA 01 · APLICAÇÃO E ACOMPANHAMENTO</span>
+              <span className="workbook-folio">FOLHA 01 Â· APLICAÃ‡ÃƒO E ACOMPANHAMENTO</span>
               {accessUnlocked ? <>
               <div className="student-dashboard-top">
-                <div><span className="eyebrow"><span></span> Modo de realização</span><h3>Seu percurso, em tempo real.</h3><p>{isAuthenticated ? "Suas respostas e tentativas podem ser sincronizadas com esta conta. A pontuação é por acerto simples e não corresponde à nota TRI." : "As respostas e tentativas ficam neste navegador até você entrar em uma conta. A pontuação é por acerto simples e não corresponde à nota TRI."}</p></div>
-                <div className="student-profile"><label className="student-name"><UserRound size={16} /><span>Nome no relatório</span><input value={studentName} disabled={submitted || maxAttemptsReached} onChange={(event) => setStudentName(event.target.value)} placeholder="Como quer ser identificado?" /></label><label className="student-name classroom-name"><GraduationCap size={16} /><span>Turma local</span><input value={classroom} disabled={submitted || maxAttemptsReached} onChange={(event) => setClassroom(event.target.value)} placeholder="Ex.: 3.º ano A" /></label></div>
+                <div><span className="eyebrow"><span></span> Modo de realizaÃ§Ã£o</span><h3>Seu percurso, em tempo real.</h3><p>{isAuthenticated ? "Suas respostas e tentativas podem ser sincronizadas com esta conta. A pontuaÃ§Ã£o Ã© por acerto simples e nÃ£o corresponde Ã  nota TRI." : "As respostas e tentativas ficam neste navegador atÃ© vocÃª entrar em uma conta. A pontuaÃ§Ã£o Ã© por acerto simples e nÃ£o corresponde Ã  nota TRI."}</p></div>
+                <div className="student-profile"><label className="student-name"><UserRound size={16} /><span>Nome no relatÃ³rio</span><input value={studentName} disabled={submitted || maxAttemptsReached} onChange={(event) => setStudentName(event.target.value)} placeholder="Como quer ser identificado?" /></label><label className="student-name classroom-name"><GraduationCap size={16} /><span>Turma local</span><input value={classroom} disabled={submitted || maxAttemptsReached} onChange={(event) => setClassroom(event.target.value)} placeholder="Ex.: 3.Âº ano A" /></label></div>
               </div>
-              <div className={`attempt-limit ${maxAttemptsReached ? "limit-reached" : ""}`}><div><span className="attempt-kicker">LIMITE DIÁRIO DE REALIZAÇÃO</span><strong>{attemptsUsed} de {MAX_DAILY_ATTEMPTS} tentativas concluídas hoje</strong><p>{maxAttemptsReached ? "As três tentativas de hoje foram concluídas. Amanhã, você terá três novas tentativas disponíveis; seu histórico permanece salvo." : `Você ainda pode concluir ${attemptsRemaining} ${attemptsRemaining === 1 ? "tentativa" : "tentativas"} hoje.`}</p></div><div className="attempt-dots" aria-label={`${attemptsUsed} de ${MAX_DAILY_ATTEMPTS} tentativas utilizadas hoje`}>{Array.from({ length: MAX_DAILY_ATTEMPTS }, (_, index) => <span className={index < attemptsUsed ? "used" : ""} key={index}>{index + 1}</span>)}</div></div>
+              <div className={`attempt-limit ${maxAttemptsReached ? "limit-reached" : ""}`}><div><span className="attempt-kicker">LIMITE DIÃRIO DE REALIZAÃ‡ÃƒO</span><strong>{attemptsUsed} de {MAX_DAILY_ATTEMPTS} tentativas concluÃ­das hoje</strong><p>{maxAttemptsReached ? "As trÃªs tentativas de hoje foram concluÃ­das. AmanhÃ£, vocÃª terÃ¡ trÃªs novas tentativas disponÃ­veis; seu histÃ³rico permanece salvo." : `VocÃª ainda pode concluir ${attemptsRemaining} ${attemptsRemaining === 1 ? "tentativa" : "tentativas"} hoje.`}</p></div><div className="attempt-dots" aria-label={`${attemptsUsed} de ${MAX_DAILY_ATTEMPTS} tentativas utilizadas hoje`}>{Array.from({ length: MAX_DAILY_ATTEMPTS }, (_, index) => <span className={index < attemptsUsed ? "used" : ""} key={index}>{index + 1}</span>)}</div></div>
               <div className={`exam-timer ${isCriticalTime ? "critical" : ""} ${isTimeOver ? "finished" : ""}`}>
-                <div className="timer-copy"><div><Timer size={19} /><span>CRONÔMETRO DE SIMULAÇÃO</span></div><p>{isTimeOver ? "Tempo encerrado" : isCriticalTime ? "Atenção: últimos 10 minutos" : "Escolha o dia e inicie quando estiver pronto."}</p></div>
+                <div className="timer-copy"><div><Timer size={19} /><span>CRONÃ”METRO DE SIMULAÃ‡ÃƒO</span></div><p>{isTimeOver ? "Tempo encerrado" : isCriticalTime ? "AtenÃ§Ã£o: Ãºltimos 10 minutos" : "Escolha o dia e inicie quando estiver pronto."}</p></div>
                 <div className="timer-display" aria-live="polite">{formatDuration(remainingSeconds)}</div>
-                <div className="timer-controls"><select value={timerPreset} disabled={submitted || maxAttemptsReached} onChange={(event) => chooseTimerPreset(event.target.value as TimerPreset)} aria-label="Selecionar duração da prova"><option value="dia1">1.º dia · 5h30</option><option value="dia2">2.º dia · 5h</option></select><button onClick={() => setTimerRunning((value) => !value)} disabled={isTimeOver || submitted || maxAttemptsReached} className="timer-start">{timerRunning ? <Pause size={15} /> : <Play size={15} />}{timerRunning ? "Pausar" : "Iniciar"}</button><button onClick={resetTimer} disabled={submitted || maxAttemptsReached} className="timer-reset" aria-label="Reiniciar cronômetro"><RotateCcw size={15} /></button></div>
+                <div className="timer-controls"><select value={timerPreset} disabled={submitted || maxAttemptsReached} onChange={(event) => chooseTimerPreset(event.target.value as TimerPreset)} aria-label="Selecionar duraÃ§Ã£o da prova"><option value="dia1">1.Âº dia Â· 5h30</option><option value="dia2">2.Âº dia Â· 5h</option></select><button onClick={() => setTimerRunning((value) => !value)} disabled={isTimeOver || submitted || maxAttemptsReached} className="timer-start">{timerRunning ? <Pause size={15} /> : <Play size={15} />}{timerRunning ? "Pausar" : "Iniciar"}</button><button onClick={resetTimer} disabled={submitted || maxAttemptsReached} className="timer-reset" aria-label="Reiniciar cronÃ´metro"><RotateCcw size={15} /></button></div>
               </div>
               <div className="live-score">
                 <div className="score-orbit" style={{ "--score": `${overallPercentage * 3.6}deg` } as React.CSSProperties}><div><strong>{overallPercentage}%</strong><span>acertos</span></div></div>
-                <div className="score-copy"><span className="mini-label">DESEMPENHO GLOBAL · TENTATIVA {currentAttemptNumber} DE {MAX_DAILY_ATTEMPTS} HOJE</span><h3>{totalCorrect} de 100 itens corretos</h3><p>{totalAnswered} respostas registradas · {100 - totalAnswered} itens em branco</p><p className="score-message">{maxAttemptsReached ? "Ciclo diário de três tentativas concluído. Consulte o histórico abaixo; amanhã haverá novas tentativas." : performanceMessage}</p></div>
-                <div className="score-actions"><Button className="score-finalize" onClick={finishSimulation} disabled={submitted || maxAttemptsReached || totalAnswered === 0}><Trophy size={16} /> {maxAttemptsReached ? "Ciclo concluído" : submitted ? "Resultado registrado" : "Finalizar e corrigir"}</Button><Button variant="outline" className="pdf-button" onClick={saveProgress} disabled={submitted || maxAttemptsReached}><FileDown size={16} /> Salvar progresso</Button><Button variant="outline" className="pdf-button" onClick={exportPdfReport} disabled={!submitted}><FileDown size={16} /> Exportar PDF</Button></div>
+                <div className="score-copy"><span className="mini-label">DESEMPENHO GLOBAL Â· TENTATIVA {currentAttemptNumber} DE {MAX_DAILY_ATTEMPTS} HOJE</span><h3>{totalCorrect} de 100 itens corretos</h3><p>{totalAnswered} respostas registradas Â· {100 - totalAnswered} itens em branco</p><p className="score-message">{maxAttemptsReached ? "Ciclo diÃ¡rio de trÃªs tentativas concluÃ­do. Consulte o histÃ³rico abaixo; amanhÃ£ haverÃ¡ novas tentativas." : performanceMessage}</p></div>
+                <div className="score-actions"><Button className="score-finalize" onClick={finishSimulation} disabled={submitted || maxAttemptsReached || totalAnswered === 0}><Trophy size={16} /> {maxAttemptsReached ? "Ciclo concluÃ­do" : submitted ? "Resultado registrado" : "Finalizar e corrigir"}</Button><Button variant="outline" className="pdf-button" onClick={saveProgress} disabled={submitted || maxAttemptsReached}><FileDown size={16} /> Salvar progresso</Button><Button variant="outline" className="pdf-button" onClick={exportPdfReport} disabled={!submitted}><FileDown size={16} /> Exportar PDF</Button></div>
               </div>
               {progressNotice && <p className="text-xs px-8 pb-3 text-[#497464] font-bold">{progressNotice}</p>}
               <div className="area-performance-grid">
-                {areaPerformance.map((area) => { const meta = areaMeta[area.area as AreaName]; return <div className="area-performance" key={area.area}><div><span style={{ background: meta.color }}></span><p>{area.short}<small>{area.correct}/25 acertos</small></p><strong>{area.percentage}%</strong></div><div className="performance-track"><i style={{ width: `${area.percentage}%`, background: meta.color }}></i></div><small>{area.answered} respondidas · {area.blank} em branco</small></div>; })}
+                {areaPerformance.map((area) => { const meta = areaMeta[area.area as AreaName]; return <div className="area-performance" key={area.area}><div><span style={{ background: meta.color }}></span><p>{area.short}<small>{area.correct}/25 acertos</small></p><strong>{area.percentage}%</strong></div><div className="performance-track"><i style={{ width: `${area.percentage}%`, background: meta.color }}></i></div><small>{area.answered} respondidas Â· {area.blank} em branco</small></div>; })}
               </div>
-              {submitted && <div className="result-ready"><Check size={17} /><p><strong>Resultado registrado.</strong> Consulte as respostas comentadas, analise os percentuais por área e exporte seu relatório personalizado.</p>{!maxAttemptsReached && <button onClick={beginNextAttempt}>Iniciar tentativa {attemptsUsed + 1} de {MAX_DAILY_ATTEMPTS} hoje <ArrowRight size={14} /></button>}</div>}
-              {maxAttemptsReached && <section className="attempts-complete" id="acompanhamento"><div className="attempts-complete-heading"><div><span className="eyebrow"><span></span> Ciclo diário concluído</span><h3>Três tentativas de hoje, agora em <i>perspectiva.</i></h3><p>{isAuthenticated ? "Seu histórico permanece associado a esta conta e novas três tentativas serão liberadas amanhã." : "Entre em uma conta para manter o histórico disponível em outro dispositivo; amanhã haverá três novas tentativas."}</p></div><div className="complete-lock"><LockKeyhole size={20} /><span>3 / 3</span></div></div><div className="local-insights"><article className="attempt-history"><div className="insight-title"><History size={18} /><div><span>HISTÓRICO DO ESTUDANTE</span><strong>{studentName.trim() || "Estudante local"}</strong></div></div>{studentAttempts.map((attempt, index) => <div className="attempt-row" key={attempt.id}><span>{String(index + 1).padStart(2, "0")}</span><p>{new Date(attempt.createdAt).toLocaleDateString("pt-BR")}<small>{attempt.correct}/100 acertos · {attempt.answered} respondidas</small></p><strong>{attempt.percentage}%</strong></div>)}</article><article className="teacher-panel"><div className="insight-title"><UsersRound size={18} /><div><span>PAINEL DOCENTE LOCAL</span><strong>{classroom.trim() || "Turma local"}</strong></div></div><div className="teacher-metrics"><div><strong>{uniqueStudentsInClass}</strong><span>estudantes</span></div><div><strong>{classAttempts.length}</strong><span>tentativas</span></div><div><strong>{classAverage}%</strong><span>média local</span></div></div><p>Os indicadores agregam registros disponíveis neste dispositivo para a turma atual.</p><button className="csv-export" onClick={exportAllAttemptsCsv}><FileDown size={14} /> Exportar CSV de todas as turmas</button></article><article className="anonymous-ranking"><div className="insight-title"><Medal size={18} /><div><span>RANKING ANÔNIMO LOCAL</span><strong>Melhor resultado por participante</strong></div></div><div className="ranking-list">{anonymousRanking.map((entry, index) => <div key={entry.label}><span>{index + 1}</span><p>{entry.label}<small>{entry.attempts} {entry.attempts === 1 ? "tentativa" : "tentativas"}</small></p><strong>{entry.best}%</strong></div>)}</div></article></div><section className="review-panel"><div className="review-heading"><div><span className="eyebrow"><span></span> Modo de revisão</span><h4>Erros que viram <i>próximo passo.</i></h4><p>Após a terceira tentativa de hoje, compare suas respostas incorretas da última realização com o gabarito e a explicação detalhada.</p></div><button onClick={() => setReviewOpen((value) => !value)}>{reviewOpen ? "Ocultar revisão" : `Revisar ${wrongQuestions.length} erros`} <ArrowRight size={14} /></button></div>{reviewOpen && <div className="review-list">{latestAttempt?.answers ? wrongQuestions.map((q) => <article className="review-item" key={q.numero}><p><strong>Questão {String(q.numero).padStart(2, "0")}</strong> · {q.enunciado}</p><div><span>Sua resposta: <b>{latestAttempt.answers[q.numero]}</b></span><span>Correta: <b>{q.correta}</b></span></div><aside><Check size={15} /> <strong>Explicação:</strong> {q.justificativa}</aside></article>) : <p className="review-empty">As tentativas anteriores não registraram as alternativas. A revisão estará disponível nas próximas tentativas concluídas.</p>}</div>}</section></section>}
+              {submitted && <div className="result-ready"><Check size={17} /><p><strong>Resultado registrado.</strong> Consulte as respostas comentadas, analise os percentuais por Ã¡rea e exporte seu relatÃ³rio personalizado.</p>{!maxAttemptsReached && <button onClick={beginNextAttempt}>Iniciar tentativa {attemptsUsed + 1} de {MAX_DAILY_ATTEMPTS} hoje <ArrowRight size={14} /></button>}</div>}
+              {maxAttemptsReached && <section className="attempts-complete" id="acompanhamento"><div className="attempts-complete-heading"><div><span className="eyebrow"><span></span> Ciclo diÃ¡rio concluÃ­do</span><h3>TrÃªs tentativas de hoje, agora em <i>perspectiva.</i></h3><p>{isAuthenticated ? "Seu histÃ³rico permanece associado a esta conta e novas trÃªs tentativas serÃ£o liberadas amanhÃ£." : "Entre em uma conta para manter o histÃ³rico disponÃ­vel em outro dispositivo; amanhÃ£ haverÃ¡ trÃªs novas tentativas."}</p></div><div className="complete-lock"><LockKeyhole size={20} /><span>3 / 3</span></div></div><div className="local-insights"><article className="attempt-history"><div className="insight-title"><History size={18} /><div><span>HISTÃ“RICO DO ESTUDANTE</span><strong>{studentName.trim() || "Estudante local"}</strong></div></div>{studentAttempts.map((attempt, index) => <div className="attempt-row" key={attempt.id}><span>{String(index + 1).padStart(2, "0")}</span><p>{new Date(attempt.createdAt).toLocaleDateString("pt-BR")}<small>{attempt.correct}/100 acertos Â· {attempt.answered} respondidas</small></p><strong>{attempt.percentage}%</strong></div>)}</article><article className="teacher-panel"><div className="insight-title"><UsersRound size={18} /><div><span>PAINEL DOCENTE LOCAL</span><strong>{classroom.trim() || "Turma local"}</strong></div></div><div className="teacher-metrics"><div><strong>{uniqueStudentsInClass}</strong><span>estudantes</span></div><div><strong>{classAttempts.length}</strong><span>tentativas</span></div><div><strong>{classAverage}%</strong><span>mÃ©dia local</span></div></div><p>Os indicadores agregam registros disponÃ­veis neste dispositivo para a turma atual.</p><button className="csv-export" onClick={exportAllAttemptsCsv}><FileDown size={14} /> Exportar CSV de todas as turmas</button></article><article className="anonymous-ranking"><div className="insight-title"><Medal size={18} /><div><span>RANKING ANÃ”NIMO LOCAL</span><strong>Melhor resultado por participante</strong></div></div><div className="ranking-list">{anonymousRanking.map((entry, index) => <div key={entry.label}><span>{index + 1}</span><p>{entry.label}<small>{entry.attempts} {entry.attempts === 1 ? "tentativa" : "tentativas"}</small></p><strong>{entry.best}%</strong></div>)}</div></article></div><section className="review-panel"><div className="review-heading"><div><span className="eyebrow"><span></span> Modo de revisÃ£o</span><h4>Erros que viram <i>prÃ³ximo passo.</i></h4><p>ApÃ³s a terceira tentativa de hoje, compare suas respostas incorretas da Ãºltima realizaÃ§Ã£o com o gabarito e a explicaÃ§Ã£o detalhada.</p></div><button onClick={() => setReviewOpen((value) => !value)}>{reviewOpen ? "Ocultar revisÃ£o" : `Revisar ${wrongQuestions.length} erros`} <ArrowRight size={14} /></button></div>{reviewOpen && <div className="review-list">{latestAttempt?.answers ? wrongQuestions.map((q) => <article className="review-item" key={q.numero}><p><strong>QuestÃ£o {String(q.numero).padStart(2, "0")}</strong> Â· {q.enunciado}</p><div><span>Sua resposta: <b>{latestAttempt.answers[q.numero]}</b></span><span>Correta: <b>{q.correta}</b></span></div><aside><Check size={15} /> <strong>ExplicaÃ§Ã£o:</strong> {q.justificativa}</aside></article>) : <p className="review-empty">As tentativas anteriores nÃ£o registraram as alternativas. A revisÃ£o estarÃ¡ disponÃ­vel nas prÃ³ximas tentativas concluÃ­das.</p>}</div>}</section></section>}
               </> : <StudentAccessGate email={studentEmail} error={identificationError} onChange={(email) => { setStudentEmail(email); setIdentificationError(""); }} onSubmit={submitStudentIdentification} />}
             </section>
             {accessUnlocked && <>
             <div className="filter-panel">
               <div className="filter-icon"><Filter size={18} /></div>
-              <div className="area-filters" aria-label="Filtro de áreas"><button className={activeArea === "Todas" ? "active" : ""} onClick={() => setActiveArea("Todas")}>Todas <span>{ATTEMPT_QUESTION_COUNT}</span></button>{attemptAreaSummary.map((entry) => <button key={entry.area} style={{ "--filter-color": areaMeta[entry.area as AreaName].color, "--filter-pale": areaMeta[entry.area as AreaName].pale } as React.CSSProperties} className={activeArea === entry.area ? "active" : ""} onClick={() => setActiveArea(entry.area as AreaName)}>{entry.short} <span>{entry.count}</span></button>)}</div>
+              <div className="area-filters" aria-label="Filtro de Ã¡reas"><button className={activeArea === "Todas" ? "active" : ""} onClick={() => setActiveArea("Todas")}>Todas <span>{ATTEMPT_QUESTION_COUNT}</span></button>{attemptAreaSummary.map((entry) => <button key={entry.area} style={{ "--filter-color": areaMeta[entry.area as AreaName].color, "--filter-pale": areaMeta[entry.area as AreaName].pale } as React.CSSProperties} className={activeArea === entry.area ? "active" : ""} onClick={() => setActiveArea(entry.area as AreaName)}>{entry.short} <span>{entry.count}</span></button>)}</div>
               <label className="search-field"><Search size={17} /><input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Buscar tema ou habilidade" /></label>
             </div>
-            <div className="results-bar"><p><strong>{filteredQuestions.length}</strong> itens encontrados {activeArea !== "Todas" && <>em <strong>{areaMeta[activeArea].short}</strong></>}</p><span>Página {page} de {totalPages}</span></div>
+            <div className="results-bar"><p><strong>{filteredQuestions.length}</strong> itens encontrados {activeArea !== "Todas" && <>em <strong>{areaMeta[activeArea].short}</strong></>}</p><span>PÃ¡gina {page} de {totalPages}</span></div>
             <div className="questions-stack">
-              {currentQuestions.length ? currentQuestions.map((q) => <QuestionCard key={q.numero} q={q} selected={answers[q.numero]} onSelect={(answer) => setAnswer(q.numero, answer)} revealed={revealed.has(q.numero)} onReveal={() => reveal(q.numero)} canReveal={submitted && teacherMode} disabled={submitted || maxAttemptsReached} />) : <div className="empty-state"><Search size={25} /><h3>Nenhum item encontrado</h3><p>Tente outro termo de busca ou selecione todas as áreas.</p></div>}
+              {currentQuestions.length ? currentQuestions.map((q) => <QuestionCard key={q.numero} q={q} selected={answers[q.numero]} onSelect={(answer) => setAnswer(q.numero, answer)} revealed={revealed.has(q.numero)} onReveal={() => reveal(q.numero)} canReveal={submitted && teacherMode} disabled={submitted || maxAttemptsReached} />) : <div className="empty-state"><Search size={25} /><h3>Nenhum item encontrado</h3><p>Tente outro termo de busca ou selecione todas as Ã¡reas.</p></div>}
             </div>
-            {filteredQuestions.length > pageSize && <div className="pagination"><button disabled={page === 1} onClick={() => setPage((value) => Math.max(1, value - 1))}><ChevronLeft size={17} /> Anterior</button><div>{Array.from({ length: totalPages }, (_, index) => <button key={index} className={page === index + 1 ? "current" : ""} onClick={() => setPage(index + 1)}>{index + 1}</button>)}</div><button disabled={page === totalPages} onClick={() => setPage((value) => Math.min(totalPages, value + 1))}>Próxima <ChevronRight size={17} /></button></div>}
+            {filteredQuestions.length > pageSize && <div className="pagination"><button disabled={page === 1} onClick={() => setPage((value) => Math.max(1, value - 1))}><ChevronLeft size={17} /> Anterior</button><div>{Array.from({ length: totalPages }, (_, index) => <button key={index} className={page === index + 1 ? "current" : ""} onClick={() => setPage(index + 1)}>{index + 1}</button>)}</div><button disabled={page === totalPages} onClick={() => setPage((value) => Math.min(totalPages, value + 1))}>PrÃ³xima <ChevronRight size={17} /></button></div>}
             </>}
           </div>
         </section>
 
         {teacherMode && <section className="correction-section" id="correcao">
-          <div className="correction-copy"><span className="eyebrow light"><span></span> Correção organizada</span><h2>Do cartão-resposta<br />à <i>próxima aula.</i></h2><p>Escolha o bloco de aplicação, revise a pré-visualização e gere a versão A4 adequada para a turma.</p><div className="correction-buttons"><Button onClick={() => requestCadernoOutput("print")}><Printer size={16} /> Imprimir caderno</Button><Button variant="outline" className="light-outline" onClick={() => requestCadernoOutput("pdf")}><FileDown size={16} /> Exportar caderno PDF</Button><Button variant="outline" className="light-outline" onClick={() => downloadFile("mascara", attemptPrintQuestions)}><ArrowDownToLine size={16} /> Baixar máscara</Button><Button variant="outline" className="light-outline" onClick={() => downloadFile("gabarito", attemptPrintQuestions)}><BookOpenCheck size={16} /> Baixar gabarito</Button></div></div>
-          <div className="correction-card"><img src="/manus-storage/enem-correction-detail_08ac5859.jpg" alt="Detalhe de uma folha de respostas sendo corrigida" /><div className="correction-card-body"><div><ClipboardCheck size={21} /><span>CHAVE DOCENTE</span></div><h3>100 respostas<br />em uma única matriz.</h3><button onClick={() => setShowKey((value) => !value)}>{showKey ? "Ocultar chave" : "Consultar chave"} <ArrowRight size={16} /></button></div></div>
-          {showKey && <div className="answer-key" aria-live="polite"><div className="answer-key-title"><div><span className="mini-label">GABARITO RÁPIDO</span><h3>Chave de correção</h3></div><button onClick={() => setShowKey(false)} aria-label="Fechar chave"><X size={17} /></button></div><div className="answer-key-grid">{attemptPrintQuestions.map((q) => <div key={q.numero}><span>{String(q.numero).padStart(3, "0")}</span><strong>{q.correta}</strong></div>)}</div></div>}
-          <div className="answer-key"><div className="answer-key-title"><div><span className="mini-label">PAINEL DOCENTE</span><h3>Resultados locais</h3></div><div><select value={teacherFilter} onChange={(event) => setTeacherFilter(event.target.value)}><option value="todas">Todas as turmas</option>{teacherClassrooms.map(([key, name]) => <option key={key} value={key}>{name}</option>)}</select><select value={teacherSort} onChange={(event) => setTeacherSort(event.target.value)}><option value="score">Maior pontuação</option><option value="date">Mais recente</option></select></div></div><div className="answer-key-grid">{teacherRows.map((attempt) => <div key={attempt.id}><span>{attempt.studentName} · {attempt.classroom}</span><strong>{attempt.percentage}%</strong></div>)}</div></div>
+          <div className="correction-copy"><span className="eyebrow light"><span></span> CorreÃ§Ã£o organizada</span><h2>Do cartÃ£o-resposta<br />Ã  <i>prÃ³xima aula.</i></h2><p>Escolha o bloco de aplicaÃ§Ã£o, revise a prÃ©-visualizaÃ§Ã£o e gere a versÃ£o A4 adequada para a turma.</p><div className="correction-buttons"><Button onClick={() => requestCadernoOutput("print")}><Printer size={16} /> Imprimir caderno</Button><Button variant="outline" className="light-outline" onClick={() => requestCadernoOutput("pdf")}><FileDown size={16} /> Exportar caderno PDF</Button><Button variant="outline" className="light-outline" onClick={() => downloadFile("mascara", attemptPrintQuestions)}><ArrowDownToLine size={16} /> Baixar mÃ¡scara</Button><Button variant="outline" className="light-outline" onClick={() => downloadFile("gabarito", attemptPrintQuestions)}><BookOpenCheck size={16} /> Baixar gabarito</Button></div></div>
+          <div className="correction-card"><img src="/manus-storage/enem-correction-detail_08ac5859.jpg" alt="Detalhe de uma folha de respostas sendo corrigida" /><div className="correction-card-body"><div><ClipboardCheck size={21} /><span>CHAVE DOCENTE</span></div><h3>100 respostas<br />em uma Ãºnica matriz.</h3><button onClick={() => setShowKey((value) => !value)}>{showKey ? "Ocultar chave" : "Consultar chave"} <ArrowRight size={16} /></button></div></div>
+          {showKey && <div className="answer-key" aria-live="polite"><div className="answer-key-title"><div><span className="mini-label">GABARITO RÃPIDO</span><h3>Chave de correÃ§Ã£o</h3></div><button onClick={() => setShowKey(false)} aria-label="Fechar chave"><X size={17} /></button></div><div className="answer-key-grid">{attemptPrintQuestions.map((q) => <div key={q.numero}><span>{String(q.numero).padStart(3, "0")}</span><strong>{q.correta}</strong></div>)}</div></div>}
+          <div className="answer-key"><div className="answer-key-title"><div><span className="mini-label">PAINEL DOCENTE</span><h3>Resultados locais</h3></div><div><select value={teacherFilter} onChange={(event) => setTeacherFilter(event.target.value)}><option value="todas">Todas as turmas</option>{teacherClassrooms.map(([key, name]) => <option key={key} value={key}>{name}</option>)}</select><select value={teacherSort} onChange={(event) => setTeacherSort(event.target.value)}><option value="score">Maior pontuaÃ§Ã£o</option><option value="date">Mais recente</option></select></div></div><div className="answer-key-grid">{teacherRows.map((attempt) => <div key={attempt.id}><span>{attempt.studentName} Â· {attempt.classroom}</span><strong>{attempt.percentage}%</strong></div>)}</div></div>
         </section>}
 
         <section className="sources-section" id="fontes">
-          <div className="sources-title"><span className="eyebrow"><span></span> Transparência editorial</span><h2>Fontes e<br /><i>delimitação.</i></h2></div>
+          <div className="sources-title"><span className="eyebrow"><span></span> TransparÃªncia editorial</span><h2>Fontes e<br /><i>delimitaÃ§Ã£o.</i></h2></div>
           <div className="sources-list">
-            <a href="https://www.gov.br/inep/pt-br/areas-de-atuacao/avaliacao-e-exames-educacionais/enem/provas-e-gabaritos" target="_blank" rel="noreferrer"><span>[1]</span><div><strong>Provas e Gabaritos do ENEM — Inep</strong><p>Estrutura das quatro provas objetivas e acesso aos cadernos oficiais desde 2009.</p></div><ArrowRight size={17} /></a>
-            <a href="https://download.inep.gov.br/download/enem/matriz_referencia.pdf" target="_blank" rel="noreferrer"><span>[2]</span><div><strong>Matriz de Referência do ENEM — Inep</strong><p>Eixos cognitivos, competências e habilidades que orientam a elaboração dos itens.</p></div><ArrowRight size={17} /></a>
-            <a href="https://www.gov.br/inep/pt-br/areas-de-atuacao/avaliacao-e-exames-educacionais/enem/provas-e-gabaritos/2024" target="_blank" rel="noreferrer"><span>[3]</span><div><strong>Cadernos e gabaritos de 2024 — Inep</strong><p>Referência recente de organização da aplicação regular em primeiro e segundo dias.</p></div><ArrowRight size={17} /></a>
-            <a href="https://www.gov.br/inep/pt-br/areas-de-atuacao/avaliacao-e-exames-educacionais/enem/provas-e-gabaritos/2022" target="_blank" rel="noreferrer"><span>[4]</span><div><strong>Cadernos e gabaritos de 2022 — Inep</strong><p>Referência histórica complementar para a continuidade da estrutura dos cadernos.</p></div><ArrowRight size={17} /></a>
+            <a href="https://www.gov.br/inep/pt-br/areas-de-atuacao/avaliacao-e-exames-educacionais/enem/provas-e-gabaritos" target="_blank" rel="noreferrer"><span>[1]</span><div><strong>Provas e Gabaritos do ENEM â€” Inep</strong><p>Estrutura das quatro provas objetivas e acesso aos cadernos oficiais desde 2009.</p></div><ArrowRight size={17} /></a>
+            <a href="https://download.inep.gov.br/download/enem/matriz_referencia.pdf" target="_blank" rel="noreferrer"><span>[2]</span><div><strong>Matriz de ReferÃªncia do ENEM â€” Inep</strong><p>Eixos cognitivos, competÃªncias e habilidades que orientam a elaboraÃ§Ã£o dos itens.</p></div><ArrowRight size={17} /></a>
+            <a href="https://www.gov.br/inep/pt-br/areas-de-atuacao/avaliacao-e-exames-educacionais/enem/provas-e-gabaritos/2024" target="_blank" rel="noreferrer"><span>[3]</span><div><strong>Cadernos e gabaritos de 2024 â€” Inep</strong><p>ReferÃªncia recente de organizaÃ§Ã£o da aplicaÃ§Ã£o regular em primeiro e segundo dias.</p></div><ArrowRight size={17} /></a>
+            <a href="https://www.gov.br/inep/pt-br/areas-de-atuacao/avaliacao-e-exames-educacionais/enem/provas-e-gabaritos/2022" target="_blank" rel="noreferrer"><span>[4]</span><div><strong>Cadernos e gabaritos de 2022 â€” Inep</strong><p>ReferÃªncia histÃ³rica complementar para a continuidade da estrutura dos cadernos.</p></div><ArrowRight size={17} /></a>
           </div>
-          <div className="disclaimer"><Info size={17} /><p><strong>Nota de uso.</strong> Este material não é uma prova oficial do Inep nem reproduz integralmente questões de anos anteriores. É um simulado autoral, com adaptação de quatro alternativas, elaborado para prática pedagógica a partir de referências públicas.</p></div>
+          <div className="disclaimer"><Info size={17} /><p><strong>Nota de uso.</strong> Este material nÃ£o Ã© uma prova oficial do Inep nem reproduz integralmente questÃµes de anos anteriores. Ã‰ um simulado autoral, com adaptaÃ§Ã£o de quatro alternativas, elaborado para prÃ¡tica pedagÃ³gica a partir de referÃªncias pÃºblicas.</p></div>
         </section>
       </main>
 
-      <footer className="footer"><div className="footer-brand"><img src="/manus-storage/enem-logo-symbol_049e20d0.png" alt="" /><span><strong>SIMULADO</strong><em>ENEM</em></span></div><p>Preparado para revisão, aplicação e correção em contexto escolar.</p>{!teacherMode && <button className="teacher-developer-access" onClick={() => openAuth("login", "developer")}><LockKeyhole size={13} /> Acesso ao professor desenvolvedor</button>}<a href="#inicio">Voltar ao topo ↑</a></footer>
+      <footer className="footer"><div className="footer-brand"><img src="/simulado-enem-logo.svg" alt="" /><span><strong>SIMULADO</strong><em>ENEM</em></span></div><p>Preparado para revisÃ£o, aplicaÃ§Ã£o e correÃ§Ã£o em contexto escolar.</p>{!teacherMode && <button className="teacher-developer-access" onClick={() => openAuth("login", "developer")}><LockKeyhole size={13} /> Acesso ao professor desenvolvedor</button>}<a href="#inicio">Voltar ao topo â†‘</a></footer>
     </div>
   );
 }
+
