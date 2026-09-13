@@ -55,6 +55,7 @@ import { hasInstitutionalTeacherAccess, isInstitutionalEmail } from "@shared/ide
 import { cadernoPdfFilename, paginateCadernoForPrint, selectCadernoPrintBlocks, type CadernoPrintBlock } from "@shared/cadernoPrint";
 import { calculateSimulationScore } from "@shared/simulationScoring";
 import { ATTEMPT_QUESTION_COUNT, QUESTIONS_PER_AREA_PER_ATTEMPT, buildAttemptQuestions } from "@shared/attemptQuestionSelection";
+import { MAX_DAILY_ATTEMPTS, getDailyAttemptCycle, isCurrentLocalDay } from "@shared/dailyAttemptCycle";
 
 type AreaName = (typeof questions)[number]["area"];
 type FilterArea = AreaName | "Todas";
@@ -74,6 +75,7 @@ type Attempt = {
   remainingSeconds: number;
   byArea: AttemptArea[];
   answers: Record<number, string>;
+  questionIds?: Record<number, string>;
 };
 
 const areaMeta: Record<AreaName, { short: string; color: string; pale: string; bar: string; index: string }> = {
@@ -98,7 +100,6 @@ const timerPresets: Record<TimerPreset, { label: string; seconds: number }> = {
   dia2: { label: "2.º dia · 5h", seconds: 5 * 60 * 60 },
 };
 
-const MAX_ATTEMPTS = 3;
 const ATTEMPTS_STORAGE_KEY = "simulado-enem-attempts-v1";
 const PROFILE_STORAGE_KEY = "simulado-enem-profile-v1";
 const PROGRESS_STORAGE_KEY = "simulado-enem-progress-v1";
@@ -285,6 +286,7 @@ export default function Home() {
   const [remainingSeconds, setRemainingSeconds] = useState(timerPresets.dia1.seconds);
   const [timerRunning, setTimerRunning] = useState(false);
   const [attempts, setAttempts] = useState<Attempt[]>(initialAttempts);
+  const [cycleDate, setCycleDate] = useState(() => new Date());
   const [reviewOpen, setReviewOpen] = useState(false);
   const [progressNotice, setProgressNotice] = useState("");
   const [teacherFilter, setTeacherFilter] = useState("todas");
@@ -299,10 +301,7 @@ export default function Home() {
   const studentKey = user?.id || normalizeIdentity(studentEmail, localProfileId);
   const classroomKey = normalizeIdentity(classroom, "turma-local");
   const studentAttempts = attempts.filter((attempt) => attempt.studentKey === studentKey);
-  const attemptsUsed = studentAttempts.length;
-  const attemptsRemaining = Math.max(0, MAX_ATTEMPTS - attemptsUsed);
-  const maxAttemptsReached = attemptsUsed >= MAX_ATTEMPTS;
-  const currentAttemptNumber = Math.min(attemptsUsed + 1, MAX_ATTEMPTS);
+  const { attemptsUsed, attemptsRemaining, maxAttemptsReached, currentAttemptNumber } = getDailyAttemptCycle(attempts, studentKey, cycleDate);
   const attemptQuestions = useMemo(() => accessUnlocked ? buildAttemptQuestions(questions, studentKey, currentAttemptNumber) : [], [accessUnlocked, studentKey, currentAttemptNumber]);
   const submitStudentIdentification = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -357,6 +356,13 @@ export default function Home() {
   }, [remainingSeconds]);
 
   useEffect(() => {
+    const now = new Date();
+    const nextDay = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
+    const timeout = window.setTimeout(() => setCycleDate(new Date()), nextDay.getTime() - now.getTime() + 100);
+    return () => window.clearTimeout(timeout);
+  }, [cycleDate]);
+
+  useEffect(() => {
     window.localStorage.setItem(ATTEMPTS_STORAGE_KEY, JSON.stringify(attempts));
   }, [attempts]);
 
@@ -367,7 +373,7 @@ export default function Home() {
   useEffect(() => {
     try {
       const draft = JSON.parse(window.localStorage.getItem(PROGRESS_STORAGE_KEY) || "null");
-      if (draft?.answers) { setAnswers(draft.answers); setRemainingSeconds(draft.remainingSeconds ?? timerPresets.dia1.seconds); setProgressNotice("Progresso anterior restaurado."); }
+      if (draft?.answers && typeof draft.savedAt === "string" && isCurrentLocalDay(draft.savedAt)) { setAnswers(draft.answers); setRemainingSeconds(draft.remainingSeconds ?? timerPresets.dia1.seconds); setProgressNotice("Progresso anterior restaurado."); }
     } catch { /* ignorar rascunho inválido */ }
   }, []);
 
@@ -483,6 +489,7 @@ export default function Home() {
       remainingSeconds,
       byArea: areaPerformance.map((area) => ({ short: area.short, correct: area.correct, answered: area.answered, blank: area.blank, percentage: area.percentage })),
       answers: { ...answers },
+      questionIds: Object.fromEntries(attemptQuestions.map((question) => [question.numero, question.id])),
     };
     const updated = [...attempts, record];
     setAttempts(updated);
@@ -543,7 +550,7 @@ export default function Home() {
     doc.setFont("helvetica", "normal");
     doc.setFontSize(9);
     doc.setTextColor(91, 102, 117);
-    doc.text(`Tentativa ${Math.max(1, attemptsUsed)} de ${MAX_ATTEMPTS} · Gerado em ${new Date().toLocaleDateString("pt-BR")} · Tempo restante: ${formatDuration(remainingSeconds)}`, 15, y + 6);
+    doc.text(`Tentativa ${Math.max(1, attemptsUsed)} de ${MAX_DAILY_ATTEMPTS} · Gerado em ${new Date().toLocaleDateString("pt-BR")} · Tempo restante: ${formatDuration(remainingSeconds)}`, 15, y + 6);
     doc.setFillColor(244, 237, 227);
     doc.roundedRect(15, y + 15, pageWidth - 30, 28, 2, 2, "F");
     doc.setTextColor(29, 42, 68);
@@ -818,7 +825,7 @@ export default function Home() {
                 <div><span className="eyebrow"><span></span> Modo de realização</span><h3>Seu percurso, em tempo real.</h3><p>{isAuthenticated ? "Suas respostas e tentativas podem ser sincronizadas com esta conta. A pontuação é por acerto simples e não corresponde à nota TRI." : "As respostas e tentativas ficam neste navegador até você entrar em uma conta. A pontuação é por acerto simples e não corresponde à nota TRI."}</p></div>
                 <div className="student-profile"><label className="student-name"><UserRound size={16} /><span>Nome no relatório</span><input value={studentName} disabled={submitted || maxAttemptsReached} onChange={(event) => setStudentName(event.target.value)} placeholder="Como quer ser identificado?" /></label><label className="student-name classroom-name"><GraduationCap size={16} /><span>Turma local</span><input value={classroom} disabled={submitted || maxAttemptsReached} onChange={(event) => setClassroom(event.target.value)} placeholder="Ex.: 3.º ano A" /></label></div>
               </div>
-              <div className={`attempt-limit ${maxAttemptsReached ? "limit-reached" : ""}`}><div><span className="attempt-kicker">LIMITE DE REALIZAÇÃO</span><strong>{attemptsUsed} de {MAX_ATTEMPTS} tentativas concluídas</strong><p>{maxAttemptsReached ? "As três tentativas foram concluídas neste navegador. O ciclo de prática está encerrado." : `Você ainda pode concluir ${attemptsRemaining} ${attemptsRemaining === 1 ? "tentativa" : "tentativas"} com este identificador.`}</p></div><div className="attempt-dots" aria-label={`${attemptsUsed} de ${MAX_ATTEMPTS} tentativas utilizadas`}>{Array.from({ length: MAX_ATTEMPTS }, (_, index) => <span className={index < attemptsUsed ? "used" : ""} key={index}>{index + 1}</span>)}</div></div>
+              <div className={`attempt-limit ${maxAttemptsReached ? "limit-reached" : ""}`}><div><span className="attempt-kicker">LIMITE DIÁRIO DE REALIZAÇÃO</span><strong>{attemptsUsed} de {MAX_DAILY_ATTEMPTS} tentativas concluídas hoje</strong><p>{maxAttemptsReached ? "As três tentativas de hoje foram concluídas. Amanhã, você terá três novas tentativas disponíveis; seu histórico permanece salvo." : `Você ainda pode concluir ${attemptsRemaining} ${attemptsRemaining === 1 ? "tentativa" : "tentativas"} hoje.`}</p></div><div className="attempt-dots" aria-label={`${attemptsUsed} de ${MAX_DAILY_ATTEMPTS} tentativas utilizadas hoje`}>{Array.from({ length: MAX_DAILY_ATTEMPTS }, (_, index) => <span className={index < attemptsUsed ? "used" : ""} key={index}>{index + 1}</span>)}</div></div>
               <div className={`exam-timer ${isCriticalTime ? "critical" : ""} ${isTimeOver ? "finished" : ""}`}>
                 <div className="timer-copy"><div><Timer size={19} /><span>CRONÔMETRO DE SIMULAÇÃO</span></div><p>{isTimeOver ? "Tempo encerrado" : isCriticalTime ? "Atenção: últimos 10 minutos" : "Escolha o dia e inicie quando estiver pronto."}</p></div>
                 <div className="timer-display" aria-live="polite">{formatDuration(remainingSeconds)}</div>
@@ -826,15 +833,15 @@ export default function Home() {
               </div>
               <div className="live-score">
                 <div className="score-orbit" style={{ "--score": `${overallPercentage * 3.6}deg` } as React.CSSProperties}><div><strong>{overallPercentage}%</strong><span>acertos</span></div></div>
-                <div className="score-copy"><span className="mini-label">DESEMPENHO GLOBAL · TENTATIVA {currentAttemptNumber}</span><h3>{totalCorrect} de 100 itens corretos</h3><p>{totalAnswered} respostas registradas · {100 - totalAnswered} itens em branco</p><p className="score-message">{maxAttemptsReached ? "Ciclo de três tentativas concluído. Consulte o acompanhamento local abaixo." : performanceMessage}</p></div>
+                <div className="score-copy"><span className="mini-label">DESEMPENHO GLOBAL · TENTATIVA {currentAttemptNumber} DE {MAX_DAILY_ATTEMPTS} HOJE</span><h3>{totalCorrect} de 100 itens corretos</h3><p>{totalAnswered} respostas registradas · {100 - totalAnswered} itens em branco</p><p className="score-message">{maxAttemptsReached ? "Ciclo diário de três tentativas concluído. Consulte o histórico abaixo; amanhã haverá novas tentativas." : performanceMessage}</p></div>
                 <div className="score-actions"><Button className="score-finalize" onClick={finishSimulation} disabled={submitted || maxAttemptsReached || totalAnswered === 0}><Trophy size={16} /> {maxAttemptsReached ? "Ciclo concluído" : submitted ? "Resultado registrado" : "Finalizar e corrigir"}</Button><Button variant="outline" className="pdf-button" onClick={saveProgress} disabled={submitted || maxAttemptsReached}><FileDown size={16} /> Salvar progresso</Button><Button variant="outline" className="pdf-button" onClick={exportPdfReport} disabled={!submitted}><FileDown size={16} /> Exportar PDF</Button></div>
               </div>
               {progressNotice && <p className="text-xs px-8 pb-3 text-[#497464] font-bold">{progressNotice}</p>}
               <div className="area-performance-grid">
                 {areaPerformance.map((area) => { const meta = areaMeta[area.area as AreaName]; return <div className="area-performance" key={area.area}><div><span style={{ background: meta.color }}></span><p>{area.short}<small>{area.correct}/25 acertos</small></p><strong>{area.percentage}%</strong></div><div className="performance-track"><i style={{ width: `${area.percentage}%`, background: meta.color }}></i></div><small>{area.answered} respondidas · {area.blank} em branco</small></div>; })}
               </div>
-              {submitted && <div className="result-ready"><Check size={17} /><p><strong>Resultado registrado.</strong> Consulte as respostas comentadas, analise os percentuais por área e exporte seu relatório personalizado.</p>{!maxAttemptsReached && <button onClick={beginNextAttempt}>Iniciar tentativa {attemptsUsed + 1} <ArrowRight size={14} /></button>}</div>}
-              {maxAttemptsReached && <section className="attempts-complete" id="acompanhamento"><div className="attempts-complete-heading"><div><span className="eyebrow"><span></span> Ciclo concluído</span><h3>Três tentativas, agora em <i>perspectiva.</i></h3><p>{isAuthenticated ? "Seu histórico permanece associado a esta conta e pode ser retomado em outro dispositivo." : "Entre em uma conta para manter o histórico deste ciclo disponível em outro dispositivo."}</p></div><div className="complete-lock"><LockKeyhole size={20} /><span>3 / 3</span></div></div><div className="local-insights"><article className="attempt-history"><div className="insight-title"><History size={18} /><div><span>HISTÓRICO DO ESTUDANTE</span><strong>{studentName.trim() || "Estudante local"}</strong></div></div>{studentAttempts.map((attempt, index) => <div className="attempt-row" key={attempt.id}><span>{String(index + 1).padStart(2, "0")}</span><p>{new Date(attempt.createdAt).toLocaleDateString("pt-BR")}<small>{attempt.correct}/100 acertos · {attempt.answered} respondidas</small></p><strong>{attempt.percentage}%</strong></div>)}</article><article className="teacher-panel"><div className="insight-title"><UsersRound size={18} /><div><span>PAINEL DOCENTE LOCAL</span><strong>{classroom.trim() || "Turma local"}</strong></div></div><div className="teacher-metrics"><div><strong>{uniqueStudentsInClass}</strong><span>estudantes</span></div><div><strong>{classAttempts.length}</strong><span>tentativas</span></div><div><strong>{classAverage}%</strong><span>média local</span></div></div><p>Os indicadores agregam registros disponíveis neste dispositivo para a turma atual.</p><button className="csv-export" onClick={exportAllAttemptsCsv}><FileDown size={14} /> Exportar CSV de todas as turmas</button></article><article className="anonymous-ranking"><div className="insight-title"><Medal size={18} /><div><span>RANKING ANÔNIMO LOCAL</span><strong>Melhor resultado por participante</strong></div></div><div className="ranking-list">{anonymousRanking.map((entry, index) => <div key={entry.label}><span>{index + 1}</span><p>{entry.label}<small>{entry.attempts} {entry.attempts === 1 ? "tentativa" : "tentativas"}</small></p><strong>{entry.best}%</strong></div>)}</div></article></div><section className="review-panel"><div className="review-heading"><div><span className="eyebrow"><span></span> Modo de revisão</span><h4>Erros que viram <i>próximo passo.</i></h4><p>Após a terceira tentativa, compare suas respostas incorretas da última realização com o gabarito e a explicação detalhada.</p></div><button onClick={() => setReviewOpen((value) => !value)}>{reviewOpen ? "Ocultar revisão" : `Revisar ${wrongQuestions.length} erros`} <ArrowRight size={15} /></button></div>{reviewOpen && <div className="review-list">{latestAttempt?.answers ? wrongQuestions.map((q) => <article className="review-item" key={q.numero}><p><strong>Questão {String(q.numero).padStart(2, "0")}</strong> · {q.enunciado}</p><div><span>Sua resposta: <b>{latestAttempt.answers[q.numero]}</b></span><span>Correta: <b>{q.correta}</b></span></div><aside><Check size={15} /> <strong>Explicação:</strong> {q.justificativa}</aside></article>) : <p className="review-empty">As tentativas anteriores não registraram as alternativas. A revisão estará disponível nas próximas tentativas concluídas.</p>}</div>}</section></section>}
+              {submitted && <div className="result-ready"><Check size={17} /><p><strong>Resultado registrado.</strong> Consulte as respostas comentadas, analise os percentuais por área e exporte seu relatório personalizado.</p>{!maxAttemptsReached && <button onClick={beginNextAttempt}>Iniciar tentativa {attemptsUsed + 1} de {MAX_DAILY_ATTEMPTS} hoje <ArrowRight size={14} /></button>}</div>}
+              {maxAttemptsReached && <section className="attempts-complete" id="acompanhamento"><div className="attempts-complete-heading"><div><span className="eyebrow"><span></span> Ciclo diário concluído</span><h3>Três tentativas de hoje, agora em <i>perspectiva.</i></h3><p>{isAuthenticated ? "Seu histórico permanece associado a esta conta e novas três tentativas serão liberadas amanhã." : "Entre em uma conta para manter o histórico disponível em outro dispositivo; amanhã haverá três novas tentativas."}</p></div><div className="complete-lock"><LockKeyhole size={20} /><span>3 / 3</span></div></div><div className="local-insights"><article className="attempt-history"><div className="insight-title"><History size={18} /><div><span>HISTÓRICO DO ESTUDANTE</span><strong>{studentName.trim() || "Estudante local"}</strong></div></div>{studentAttempts.map((attempt, index) => <div className="attempt-row" key={attempt.id}><span>{String(index + 1).padStart(2, "0")}</span><p>{new Date(attempt.createdAt).toLocaleDateString("pt-BR")}<small>{attempt.correct}/100 acertos · {attempt.answered} respondidas</small></p><strong>{attempt.percentage}%</strong></div>)}</article><article className="teacher-panel"><div className="insight-title"><UsersRound size={18} /><div><span>PAINEL DOCENTE LOCAL</span><strong>{classroom.trim() || "Turma local"}</strong></div></div><div className="teacher-metrics"><div><strong>{uniqueStudentsInClass}</strong><span>estudantes</span></div><div><strong>{classAttempts.length}</strong><span>tentativas</span></div><div><strong>{classAverage}%</strong><span>média local</span></div></div><p>Os indicadores agregam registros disponíveis neste dispositivo para a turma atual.</p><button className="csv-export" onClick={exportAllAttemptsCsv}><FileDown size={14} /> Exportar CSV de todas as turmas</button></article><article className="anonymous-ranking"><div className="insight-title"><Medal size={18} /><div><span>RANKING ANÔNIMO LOCAL</span><strong>Melhor resultado por participante</strong></div></div><div className="ranking-list">{anonymousRanking.map((entry, index) => <div key={entry.label}><span>{index + 1}</span><p>{entry.label}<small>{entry.attempts} {entry.attempts === 1 ? "tentativa" : "tentativas"}</small></p><strong>{entry.best}%</strong></div>)}</div></article></div><section className="review-panel"><div className="review-heading"><div><span className="eyebrow"><span></span> Modo de revisão</span><h4>Erros que viram <i>próximo passo.</i></h4><p>Após a terceira tentativa de hoje, compare suas respostas incorretas da última realização com o gabarito e a explicação detalhada.</p></div><button onClick={() => setReviewOpen((value) => !value)}>{reviewOpen ? "Ocultar revisão" : `Revisar ${wrongQuestions.length} erros`} <ArrowRight size={14} /></button></div>{reviewOpen && <div className="review-list">{latestAttempt?.answers ? wrongQuestions.map((q) => <article className="review-item" key={q.numero}><p><strong>Questão {String(q.numero).padStart(2, "0")}</strong> · {q.enunciado}</p><div><span>Sua resposta: <b>{latestAttempt.answers[q.numero]}</b></span><span>Correta: <b>{q.correta}</b></span></div><aside><Check size={15} /> <strong>Explicação:</strong> {q.justificativa}</aside></article>) : <p className="review-empty">As tentativas anteriores não registraram as alternativas. A revisão estará disponível nas próximas tentativas concluídas.</p>}</div>}</section></section>}
               </> : <StudentAccessGate email={studentEmail} error={identificationError} onChange={(email) => { setStudentEmail(email); setIdentificationError(""); }} onSubmit={submitStudentIdentification} />}
             </section>
             {accessUnlocked && <>

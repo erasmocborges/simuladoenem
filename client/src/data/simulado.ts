@@ -1,5 +1,5 @@
 export type Question = {
-  numero: number; area: string; areaCurta: string; habilidade: string; referencia: string;
+  id: string; numero: number; area: string; areaCurta: string; habilidade: string; referencia: string;
   enunciado: string; alternativas: { A: string; B: string; C: string; D: string }; correta: string; justificativa: string;
 };
 

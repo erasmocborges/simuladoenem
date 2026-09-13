@@ -3,6 +3,12 @@ import type { Question } from "../client/src/data/simulado";
 export const QUESTIONS_PER_AREA_PER_ATTEMPT = 25;
 export const ATTEMPT_AREA_COUNT = 4;
 export const ATTEMPT_QUESTION_COUNT = QUESTIONS_PER_AREA_PER_ATTEMPT * ATTEMPT_AREA_COUNT;
+export const ATTEMPT_AREA_ORDER = [
+  "Linguagens, Códigos e suas Tecnologias",
+  "Ciências Humanas e suas Tecnologias",
+  "Ciências da Natureza e suas Tecnologias",
+  "Matemática e suas Tecnologias",
+] as const;
 
 const LETTERS = ["A", "B", "C", "D"] as const;
 type Letter = (typeof LETTERS)[number];
@@ -53,16 +59,24 @@ function shuffleAlternatives(question: Question, studentKey: string, attemptNumb
 
 export function buildAttemptQuestions(bank: readonly Question[], studentKey: string, attemptNumber: number) {
   if (!Number.isInteger(attemptNumber) || attemptNumber < 1) throw new Error("A tentativa deve ser um número inteiro positivo.");
-  const areas = Array.from(new Set(bank.map((question) => question.area)));
-  if (areas.length !== ATTEMPT_AREA_COUNT) throw new Error(`O banco deve conter ${ATTEMPT_AREA_COUNT} áreas.`);
-  const chosenByArea = areas.map((area) => {
+  const bankAreas = new Set(bank.map((question) => question.area));
+  if (bankAreas.size !== ATTEMPT_AREA_COUNT || ATTEMPT_AREA_ORDER.some((area) => !bankAreas.has(area))) {
+    throw new Error(`O banco deve conter as ${ATTEMPT_AREA_COUNT} áreas do simulado.`);
+  }
+
+  const chosenByArea = ATTEMPT_AREA_ORDER.map((area) => {
     const pool = bank.filter((question) => question.area === area);
     const shuffledPool = seededShuffle(pool, studentKey, area, "pool");
     const start = (attemptNumber - 1) * QUESTIONS_PER_AREA_PER_ATTEMPT;
     const end = start + QUESTIONS_PER_AREA_PER_ATTEMPT;
     if (shuffledPool.length < end) throw new Error(`A área ${area} não tem questões suficientes para a tentativa ${attemptNumber}.`);
-    return shuffledPool.slice(start, end);
+    return seededShuffle(shuffledPool.slice(start, end), studentKey, attemptNumber, area, "block-order");
   });
-  const selected = chosenByArea.flatMap((items) => items).map((question) => shuffleAlternatives(question, studentKey, attemptNumber));
-  return seededShuffle(selected, studentKey, attemptNumber, "order").map((question, index) => ({ ...question, numero: index + 1 }));
+
+  // `numero` is the position shown in this attempt. `id` remains the stable bank
+  // identifier used to trace the original item independently of that position.
+  return chosenByArea
+    .flatMap((items) => items)
+    .map((question) => shuffleAlternatives(question, studentKey, attemptNumber))
+    .map((question, index) => ({ ...question, numero: index + 1 }));
 }
