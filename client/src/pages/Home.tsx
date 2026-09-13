@@ -730,8 +730,7 @@ export default function Home() {
           <div className="hero-content">
             <div className="eyebrow"><span></span> Caderno autoral reformulado · 100 itens</div>
             <h1>Revisão que vira <i>diagnóstico.</i></h1>
-            <p>Um caderno de simulado para aplicar, interpretar e corrigir: **25 questões por área**, quatro alternativas e uma estrutura pronta para a sala de aula.</p>
-            <div className="hero-actions">
+<p>Um caderno de simulado para aplicar, interpretar e corrigir: 25 questões por área, quatro alternativas e uma estrutura pronta para a sala de aula.</p>            <div className="hero-actions">
               <Button onClick={() => scrollToSection("questoes")} className="hero-primary">Iniciar simulado <ArrowRight size={17} /></Button>
               {teacherMode && <button className="hero-secondary" onClick={() => downloadFile("mascara", attemptPrintQuestions)}><ArrowDownToLine size={17} /> Baixar máscara</button>}
             </div>
