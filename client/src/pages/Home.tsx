@@ -230,7 +230,11 @@ function StudentAccessGate({ email, error, onChange, onSubmit }: { email: string
 }
 
 function QuestionCard({ q, selected, onSelect, revealed, onReveal, canReveal, disabled }: { q: Question; selected?: string; onSelect: (answer: string) => void; revealed: boolean; onReveal: () => void; canReveal: boolean; disabled: boolean }) {
-  const meta = areaMeta[q.area as AreaName];
+const meta = Object.entries(areaMeta).find(([area]) => area === q.area)?.[1];
+
+if (!meta) {
+  throw new Error(`Área de questão não reconhecida: "${q.area}"`);
+}
   return (
     <article className="question-card" style={{ "--question-color": meta.color, "--question-pale": meta.pale } as React.CSSProperties}>
       <div className="question-meta">
