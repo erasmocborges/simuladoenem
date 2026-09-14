@@ -110,7 +110,7 @@
     "vitest": "^2.1.4"
   },
   "overrides": {
-  "react-is": "$react-is",
+  "react-is": "$react-is"
   },
   "pnpm": {
     "patchedDependencies": {
