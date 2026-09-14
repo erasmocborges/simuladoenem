@@ -32,7 +32,6 @@ import {
   UserRound,
   UsersRound,
   X,
-  Mail,
 } from "lucide-react";
 import {
   Bar,
@@ -51,7 +50,7 @@ import { StudentAuthDialog } from "@/components/StudentAuthDialog";
 import { questions, areaSummary, type Question } from "@/data/simulado";
 import { useAuth } from "@/_core/hooks/useAuth";
 import { loadRemoteProgress, saveRemoteProgress } from "@/lib/progressApi";
-import { hasInstitutionalTeacherAccess, isInstitutionalEmail } from "@shared/identityRoles";
+import { hasInstitutionalTeacherAccess } from "@shared/identityRoles";
 import { cadernoPdfFilename, paginateCadernoForPrint, selectCadernoPrintBlocks, type CadernoPrintBlock } from "@shared/cadernoPrint";
 import { calculateSimulationScore } from "@shared/simulationScoring";
 import { ATTEMPT_QUESTION_COUNT, QUESTIONS_PER_AREA_PER_ATTEMPT, buildAttemptQuestions } from "@shared/attemptQuestionSelection";
@@ -225,17 +224,38 @@ function printPreview(selectedQuestions: readonly Question[], selectionLabel: st
   window.setTimeout(() => printWindow.print(), 300);
   return true;
 }
-
-function StudentAccessGate({ email, error, onChange, onSubmit }: { email: string; error: string; onChange: (email: string) => void; onSubmit: (event: React.FormEvent<HTMLFormElement>) => void }) {
+function StudentAccessGate({ onLogin }: { onLogin: () => void }) {
   return (
-    <div className="student-access-gate" role="region" aria-labelledby="student-access-title">
-      <div className="student-access-icon"><Mail size={22} /></div>
-      <div className="student-access-copy"><span className="mini-label">IDENTIFICAÃ‡ÃƒO OBRIGATÃ“RIA</span><h3 id="student-access-title">Entre com seu e-mail institucional.</h3><p>O simulado Ã© liberado somente para estudantes com endereÃ§o terminado em <strong>@escola.pr.gov.br</strong>. O e-mail identifica seu ciclo de trÃªs tentativas neste navegador.</p></div>
-      <form className="student-access-form" onSubmit={onSubmit}>
-        <label className="student-name"><Mail size={16} /><span>E-mail institucional</span><input type="email" value={email} onChange={(event) => onChange(event.target.value)} placeholder="nome@escola.pr.gov.br" autoComplete="email" required /></label>
-        <button type="submit" className="timer-start">Liberar simulado <ArrowRight size={15} /></button>
-      </form>
-      {error && <p className="student-access-error" role="alert">{error}</p>}
+    <div
+      className="student-access-gate"
+      role="region"
+      aria-labelledby="student-access-title"
+    >
+      <div className="student-access-icon">
+        <UserRound size={22} />
+      </div>
+
+      <div className="student-access-copy">
+        <span className="mini-label">ACESSO DO ALUNO</span>
+
+        <h3 id="student-access-title">
+          Entre para iniciar o simulado.
+        </h3>
+
+        <p>
+          Conecte sua conta Google para salvar seu progresso,
+          suas tentativas e seu histórico.
+        </p>
+      </div>
+
+      <button
+        type="button"
+        className="timer-start"
+        onClick={onLogin}
+      >
+        Entrar com Google
+        <ArrowRight size={15} />
+      </button>
     </div>
   );
 }
@@ -281,8 +301,6 @@ export default function Home() {
   const [authContext, setAuthContext] = useState<"student" | "developer">("student");
   const profile = useMemo(() => initialProfile(), []);
   const [studentEmail, setStudentEmail] = useState(profile.studentEmail);
-  const [studentIdentified, setStudentIdentified] = useState(() => isInstitutionalEmail(profile.studentEmail));
-  const [identificationError, setIdentificationError] = useState("");
   const [activeArea, setActiveArea] = useState<FilterArea>("Todas");
   const [query, setQuery] = useState("");
   const [page, setPage] = useState(1);
@@ -307,26 +325,14 @@ export default function Home() {
   const [printDialogOpen, setPrintDialogOpen] = useState(false);
   const [cadernoOutputMode, setCadernoOutputMode] = useState<CadernoOutputMode>("print");
   const [selectedCadernoBlocks, setSelectedCadernoBlocks] = useState<string[]>(() => CADERNO_PRINT_BLOCKS.map((block) => block.id));
-  const teacherMode = hasInstitutionalTeacherAccess(user);
-  const accessUnlocked = teacherMode || studentIdentified;
-  const studentKey = user?.id || normalizeIdentity(studentEmail, localProfileId);
+ const teacherMode = hasInstitutionalTeacherAccess(user);
+const accessUnlocked = teacherMode || isAuthenticated;
+const studentKey = user?.id || localProfileId;
   const classroomKey = normalizeIdentity(classroom, "turma-local");
   const studentAttempts = attempts.filter((attempt) => attempt.studentKey === studentKey);
   const { attemptsUsed, attemptsRemaining, maxAttemptsReached, currentAttemptNumber } = getDailyAttemptCycle(attempts, studentKey, cycleDate);
   const attemptQuestions = useMemo(() => accessUnlocked ? buildAttemptQuestions(questions, studentKey, currentAttemptNumber) : [], [accessUnlocked, studentKey, currentAttemptNumber]);
-  const submitStudentIdentification = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    const normalizedEmail = studentEmail.trim().toLocaleLowerCase("pt-BR");
-    if (!isInstitutionalEmail(normalizedEmail)) {
-      setIdentificationError("Informe um e-mail institucional vÃ¡lido, terminado em @escola.pr.gov.br.");
-      return;
-    }
-    setStudentEmail(normalizedEmail);
-    setStudentIdentified(true);
-    setIdentificationError("");
-    setProgressNotice("IdentificaÃ§Ã£o institucional confirmada. Seu conjunto de questÃµes foi preparado.");
-    scrollToSection("questoes");
-  };
+  const submitStudentIdentification = (event: React.FormEvent<HTMLFormElement>) => ;
   const openAuth = (mode: "login" | "signup", context: "student" | "developer" = "student") => {
     setAuthInitialMode(mode);
     setAuthContext(context);
@@ -853,7 +859,9 @@ export default function Home() {
               </div>
               {submitted && <div className="result-ready"><Check size={17} /><p><strong>Resultado registrado.</strong> Consulte as respostas comentadas, analise os percentuais por Ã¡rea e exporte seu relatÃ³rio personalizado.</p>{!maxAttemptsReached && <button onClick={beginNextAttempt}>Iniciar tentativa {attemptsUsed + 1} de {MAX_DAILY_ATTEMPTS} hoje <ArrowRight size={14} /></button>}</div>}
               {maxAttemptsReached && <section className="attempts-complete" id="acompanhamento"><div className="attempts-complete-heading"><div><span className="eyebrow"><span></span> Ciclo diÃ¡rio concluÃ­do</span><h3>TrÃªs tentativas de hoje, agora em <i>perspectiva.</i></h3><p>{isAuthenticated ? "Seu histÃ³rico permanece associado a esta conta e novas trÃªs tentativas serÃ£o liberadas amanhÃ£." : "Entre em uma conta para manter o histÃ³rico disponÃ­vel em outro dispositivo; amanhÃ£ haverÃ¡ trÃªs novas tentativas."}</p></div><div className="complete-lock"><LockKeyhole size={20} /><span>3 / 3</span></div></div><div className="local-insights"><article className="attempt-history"><div className="insight-title"><History size={18} /><div><span>HISTÃ“RICO DO ESTUDANTE</span><strong>{studentName.trim() || "Estudante local"}</strong></div></div>{studentAttempts.map((attempt, index) => <div className="attempt-row" key={attempt.id}><span>{String(index + 1).padStart(2, "0")}</span><p>{new Date(attempt.createdAt).toLocaleDateString("pt-BR")}<small>{attempt.correct}/100 acertos Â· {attempt.answered} respondidas</small></p><strong>{attempt.percentage}%</strong></div>)}</article><article className="teacher-panel"><div className="insight-title"><UsersRound size={18} /><div><span>PAINEL DOCENTE LOCAL</span><strong>{classroom.trim() || "Turma local"}</strong></div></div><div className="teacher-metrics"><div><strong>{uniqueStudentsInClass}</strong><span>estudantes</span></div><div><strong>{classAttempts.length}</strong><span>tentativas</span></div><div><strong>{classAverage}%</strong><span>mÃ©dia local</span></div></div><p>Os indicadores agregam registros disponÃ­veis neste dispositivo para a turma atual.</p><button className="csv-export" onClick={exportAllAttemptsCsv}><FileDown size={14} /> Exportar CSV de todas as turmas</button></article><article className="anonymous-ranking"><div className="insight-title"><Medal size={18} /><div><span>RANKING ANÃ”NIMO LOCAL</span><strong>Melhor resultado por participante</strong></div></div><div className="ranking-list">{anonymousRanking.map((entry, index) => <div key={entry.label}><span>{index + 1}</span><p>{entry.label}<small>{entry.attempts} {entry.attempts === 1 ? "tentativa" : "tentativas"}</small></p><strong>{entry.best}%</strong></div>)}</div></article></div><section className="review-panel"><div className="review-heading"><div><span className="eyebrow"><span></span> Modo de revisÃ£o</span><h4>Erros que viram <i>prÃ³ximo passo.</i></h4><p>ApÃ³s a terceira tentativa de hoje, compare suas respostas incorretas da Ãºltima realizaÃ§Ã£o com o gabarito e a explicaÃ§Ã£o detalhada.</p></div><button onClick={() => setReviewOpen((value) => !value)}>{reviewOpen ? "Ocultar revisÃ£o" : `Revisar ${wrongQuestions.length} erros`} <ArrowRight size={14} /></button></div>{reviewOpen && <div className="review-list">{latestAttempt?.answers ? wrongQuestions.map((q) => <article className="review-item" key={q.numero}><p><strong>QuestÃ£o {String(q.numero).padStart(2, "0")}</strong> Â· {q.enunciado}</p><div><span>Sua resposta: <b>{latestAttempt.answers[q.numero]}</b></span><span>Correta: <b>{q.correta}</b></span></div><aside><Check size={15} /> <strong>ExplicaÃ§Ã£o:</strong> {q.justificativa}</aside></article>) : <p className="review-empty">As tentativas anteriores nÃ£o registraram as alternativas. A revisÃ£o estarÃ¡ disponÃ­vel nas prÃ³ximas tentativas concluÃ­das.</p>}</div>}</section></section>}
-              </> : <StudentAccessGate email={studentEmail} error={identificationError} onChange={(email) => { setStudentEmail(email); setIdentificationError(""); }} onSubmit={submitStudentIdentification} />}
+              </> : <StudentAccessGate
+  onLogin={() => openAuth("login")}
+/>
             </section>
             {accessUnlocked && <>
             <div className="filter-panel">
