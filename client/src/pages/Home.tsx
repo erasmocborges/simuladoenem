@@ -79,12 +79,23 @@ type Attempt = {
 };
 
 const areaMeta: Record<AreaName, { short: string; color: string; pale: string; bar: string; index: string }> = {
-  "Linguagens, CÃ³digos e suas Tecnologias": { short: "Linguagens", color: "#C84D3A", pale: "#F5E1D9", bar: "#C84D3A", index: "01" },
-  "CiÃªncias Humanas e suas Tecnologias": { short: "Humanas", color: "#8A6B2D", pale: "#F1E8CC", bar: "#B28A3A", index: "02" },
-  "CiÃªncias da Natureza e suas Tecnologias": { short: "Natureza", color: "#497464", pale: "#DDEBE5", bar: "#5D8C78", index: "03" },
-  "MatemÃ¡tica e suas Tecnologias": { short: "MatemÃ¡tica", color: "#1D4C72", pale: "#DDE8F1", bar: "#3B709D", index: "04" },
+  "Linguagens, Códigos e suas Tecnologias": { short: "Linguagens", color: "#C84D3A", pale: "#F5E1D9", bar: "#C84D3A", index: "01" },
+  "Ciências Humanas e suas Tecnologias": { short: "Humanas", color: "#8A6B2D", pale: "#F1E8CC", bar: "#B28A3A", index: "02" },
+  "Ciências da Natureza e suas Tecnologias": { short: "Natureza", color: "#497464", pale: "#DDEBE5", bar: "#5D8C78", index: "03" },
+  "Matemática e suas Tecnologias": { short: "Matemática", color: "#1D4C72", pale: "#DDE8F1", bar: "#3B709D", index: "04" },
 };
 
+function getAreaMeta(area: string) {
+  const normalized = area.trim().normalize("NFC");
+
+  return areaMeta[normalized as AreaName] ?? {
+    short: area || "Área",
+    color: "#64748B",
+    pale: "#F1F5F9",
+    bar: "#64748B",
+    index: "--",
+  };
+}
 const chartColors = ["#C84D3A", "#B28A3A", "#5D8C78", "#3B709D"];
 const operationData = [
   { name: "Leitura e argumentaÃ§Ã£o", value: 32 },
@@ -230,11 +241,7 @@ function StudentAccessGate({ email, error, onChange, onSubmit }: { email: string
 }
 
 function QuestionCard({ q, selected, onSelect, revealed, onReveal, canReveal, disabled }: { q: Question; selected?: string; onSelect: (answer: string) => void; revealed: boolean; onReveal: () => void; canReveal: boolean; disabled: boolean }) {
-const meta = Object.entries(areaMeta).find(([area]) => area === q.area)?.[1];
-
-if (!meta) {
-  throw new Error(`Área de questão não reconhecida: "${q.area}"`);
-}
+const meta = getAreaMeta(q.area);
   return (
     <article className="question-card" style={{ "--question-color": meta.color, "--question-pale": meta.pale } as React.CSSProperties}>
       <div className="question-meta">
@@ -570,7 +577,7 @@ export default function Home() {
     doc.text("Desempenho detalhado por Ã¡rea", 15, y);
     y += 8;
     areaPerformance.forEach((area, index) => {
-      const meta = areaMeta[area.area as AreaName];
+      const meta = getAreaMeta(area.area);
       const hex = meta.color.replace("#", "");
       doc.setFillColor(parseInt(hex.slice(0, 2), 16), parseInt(hex.slice(2, 4), 16), parseInt(hex.slice(4, 6), 16));
       doc.rect(15, y + index * 8, area.percentage * 1.4, 4, "F");
@@ -580,7 +587,7 @@ export default function Home() {
     y += 38;
     areaPerformance.forEach((area) => {
       if (y > pageHeight - 32) { doc.addPage(); y = 20; }
-      const meta = areaMeta[area.area as AreaName];
+      const meta = getAreaMeta(area.area);
       const hex = meta.color.replace("#", "");
       doc.setFillColor(parseInt(hex.slice(0, 2), 16), parseInt(hex.slice(2, 4), 16), parseInt(hex.slice(4, 6), 16));
       doc.rect(15, y - 4, 3, 18, "F");
@@ -851,7 +858,7 @@ export default function Home() {
             {accessUnlocked && <>
             <div className="filter-panel">
               <div className="filter-icon"><Filter size={18} /></div>
-              <div className="area-filters" aria-label="Filtro de Ã¡reas"><button className={activeArea === "Todas" ? "active" : ""} onClick={() => setActiveArea("Todas")}>Todas <span>{ATTEMPT_QUESTION_COUNT}</span></button>{attemptAreaSummary.map((entry) => <button key={entry.area} style={{ "--filter-color": areaMeta[entry.area as AreaName].color, "--filter-pale": areaMeta[entry.area as AreaName].pale } as React.CSSProperties} className={activeArea === entry.area ? "active" : ""} onClick={() => setActiveArea(entry.area as AreaName)}>{entry.short} <span>{entry.count}</span></button>)}</div>
+              <div className="area-filters" aria-label="Filtro de Ã¡reas"><button className={activeArea === "Todas" ? "active" : ""} onClick={() => setActiveArea("Todas")}>Todas <span>{ATTEMPT_QUESTION_COUNT}</span></button>{attemptAreaSummary.map((entry) => <button key={entry.area} style={{ "--filter-color": getAreaMeta(entry.area).color, "--filter-pale": areaMeta[entry.area as AreaName].pale } as React.CSSProperties} className={activeArea === entry.area ? "active" : ""} onClick={() => setActiveArea(entry.area as AreaName)}>{entry.short} <span>{entry.count}</span></button>)}</div>
               <label className="search-field"><Search size={17} /><input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Buscar tema ou habilidade" /></label>
             </div>
             <div className="results-bar"><p><strong>{filteredQuestions.length}</strong> itens encontrados {activeArea !== "Todas" && <>em <strong>{areaMeta[activeArea].short}</strong></>}</p><span>PÃ¡gina {page} de {totalPages}</span></div>
