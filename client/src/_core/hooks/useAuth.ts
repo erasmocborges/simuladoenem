@@ -104,16 +104,26 @@ export function useAuth() {
   const signInWithGoogle = useCallback(async () => {
     setError(null);
 
-    const { error: googleError } = await supabase.auth.signInWithOAuth({
-      provider: "google",
-      options: {
-        redirectTo: window.location.origin,
-      },
-    });
+    const { data, error: googleError } =
+  await supabase.auth.signInWithOAuth({
+    provider: "google",
+    options: {
+      redirectTo: window.location.origin,
+      skipBrowserRedirect: true,
+    },
+  });
 
-    if (googleError) {
-      throw googleError;
-    }
+if (googleError) {
+  throw googleError;
+}
+
+if (!data.url) {
+  throw new Error(
+    "O Supabase não retornou a URL de autenticação do Google.",
+  );
+}
+
+window.location.assign(data.url);
   }, []);
 
   const recover = useCallback(async (email: string) => {
