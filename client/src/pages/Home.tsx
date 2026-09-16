@@ -268,7 +268,6 @@ export default function Home() {
   const [authInitialMode, setAuthInitialMode] = useState<"login" | "signup">("login");
   const [authContext, setAuthContext] = useState<"student" | "developer">("student");
   const profile = useMemo(() => initialProfile(), []);
-  const [studentEmail, setStudentEmail] = useState(profile.studentEmail);
   const [studentIdentified, setStudentIdentified] = useState(() => isInstitutionalEmail(profile.studentEmail));
   const [identificationError, setIdentificationError] = useState("");
   const [activeArea, setActiveArea] = useState<FilterArea>("Todas");
@@ -304,7 +303,6 @@ export default function Home() {
   const maxAttemptsReached = attemptsUsed >= MAX_ATTEMPTS;
   const currentAttemptNumber = Math.min(attemptsUsed + 1, MAX_ATTEMPTS);
   const attemptQuestions = useMemo(() => accessUnlocked ? buildAttemptQuestions(questions, studentKey, currentAttemptNumber) : [], [accessUnlocked, studentKey, currentAttemptNumber]);
-  const submitStudentIdentification = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const normalizedEmail = studentEmail.trim().toLocaleLowerCase("pt-BR");
     if (!isInstitutionalEmail(normalizedEmail)) {
