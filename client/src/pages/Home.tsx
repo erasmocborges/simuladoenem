@@ -381,11 +381,7 @@ const studentKey = user?.id || localProfileId;
     window.localStorage.setItem(ATTEMPTS_STORAGE_KEY, JSON.stringify(attempts));
   }, [attempts]);
 
-  useEffect(() => {
-    window.localStorage.setItem(PROFILE_STORAGE_KEY, JSON.stringify({ studentEmail, studentName, classroom, localId: localProfileId }));
-  }, [studentEmail, studentName, classroom, localProfileId]);
-
-  useEffect(() => {
+    useEffect(() => {
     try {
       const draft = JSON.parse(window.localStorage.getItem(PROGRESS_STORAGE_KEY) || "null");
       if (draft?.answers && typeof draft.savedAt === "string" && isCurrentLocalDay(draft.savedAt)) { setAnswers(draft.answers); setRemainingSeconds(draft.remainingSeconds ?? timerPresets.dia1.seconds); setProgressNotice("Progresso anterior restaurado."); }
@@ -418,7 +414,6 @@ const studentKey = user?.id || localProfileId;
       const synced = JSON.parse(remotePayload);
       if (synced.answers) setAnswers(synced.answers);
       if (typeof synced.remainingSeconds === "number") setRemainingSeconds(synced.remainingSeconds);
-      if (typeof synced.studentEmail === "string" && isInstitutionalEmail(synced.studentEmail)) { setStudentEmail(synced.studentEmail); setStudentIdentified(true); }
       if (typeof synced.studentName === "string") setStudentName(synced.studentName);
       if (typeof synced.classroom === "string") setClassroom(synced.classroom);
       if (Array.isArray(synced.attempts)) setAttempts(synced.attempts);
@@ -476,7 +471,7 @@ const studentKey = user?.id || localProfileId;
     setTimerRunning(false);
     setRemainingSeconds(timerPresets[preset].seconds);
   };
-  const syncProgress = async (payload: { answers: Record<number, string>; remainingSeconds: number; studentEmail: string; studentName: string; classroom: string; attempts: Attempt[]; savedAt: string }) => {
+  const syncProgress = async (payload: { answers: Record<number, string>; remainingSeconds: number; studentName: string; classroom: string; attempts: Attempt[]; savedAt: string }) => {
     if (!isAuthenticated) return;
     setSyncState("syncing");
     try {
@@ -508,7 +503,7 @@ const studentKey = user?.id || localProfileId;
     };
     const updated = [...attempts, record];
     setAttempts(updated);
-    if (isAuthenticated) void syncProgress({ answers, remainingSeconds, studentEmail, studentName, classroom, attempts: updated, savedAt: new Date().toISOString() });
+    if (isAuthenticated) void syncProgress({ answers, remainingSeconds, studentName, classroom, attempts: updated, savedAt: new Date().toISOString() });
     window.localStorage.removeItem(PROGRESS_STORAGE_KEY);
     setSubmitted(true);
     setTimerRunning(false);
@@ -526,9 +521,9 @@ const studentKey = user?.id || localProfileId;
     setPage(1);
     scrollToSection("questoes");
   };
-  const saveProgress = () => {
-    const payload = { answers, remainingSeconds, studentEmail, studentName, classroom, attempts, savedAt: new Date().toISOString() };
-    window.localStorage.setItem(PROGRESS_STORAGE_KEY, JSON.stringify(payload));
+ const saveProgress = () => {
+  const payload = { answers, remainingSeconds, studentName, classroom, attempts, savedAt: new Date().toISOString() };
+   indow.localStorage.setItem(PROGRESS_STORAGE_KEY, JSON.stringify(payload));
     if (isAuthenticated) void syncProgress(payload);
     else setProgressNotice("Progresso salvo neste navegador. Entre na sua conta para sincronizÃ¡-lo entre dispositivos.");
   };
