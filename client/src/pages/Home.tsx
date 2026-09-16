@@ -300,7 +300,6 @@ export default function Home() {
   const [authInitialMode, setAuthInitialMode] = useState<"login" | "signup">("login");
   const [authContext, setAuthContext] = useState<"student" | "developer">("student");
   const profile = useMemo(() => initialProfile(), []);
-  const [studentEmail, setStudentEmail] = useState(profile.studentEmail);
   const [activeArea, setActiveArea] = useState<FilterArea>("Todas");
   const [query, setQuery] = useState("");
   const [page, setPage] = useState(1);
@@ -332,7 +331,6 @@ const studentKey = user?.id || localProfileId;
   const studentAttempts = attempts.filter((attempt) => attempt.studentKey === studentKey);
   const { attemptsUsed, attemptsRemaining, maxAttemptsReached, currentAttemptNumber } = getDailyAttemptCycle(attempts, studentKey, cycleDate);
   const attemptQuestions = useMemo(() => accessUnlocked ? buildAttemptQuestions(questions, studentKey, currentAttemptNumber) : [], [accessUnlocked, studentKey, currentAttemptNumber]);
-  const submitStudentIdentification = (event: React.FormEvent<HTMLFormElement>) => ;
   const openAuth = (mode: "login" | "signup", context: "student" | "developer" = "student") => {
     setAuthInitialMode(mode);
     setAuthContext(context);
