@@ -523,8 +523,8 @@ const studentKey = user?.id || localProfileId;
   };
  const saveProgress = () => {
   const payload = { answers, remainingSeconds, studentName, classroom, attempts, savedAt: new Date().toISOString() };
-   indow.localStorage.setItem(PROGRESS_STORAGE_KEY, JSON.stringify(payload));
-    if (isAuthenticated) void syncProgress(payload);
+window.localStorage.setItem(PROGRESS_STORAGE_KEY, JSON.stringify(payload));
+   if (isAuthenticated) void syncProgress(payload);
     else setProgressNotice("Progresso salvo neste navegador. Entre na sua conta para sincronizÃ¡-lo entre dispositivos.");
   };
   const exportAllAttemptsCsv = () => {
